@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Jvent</string>
+
+    <string name="make_event">Buat Event</string>
+    <string name="explore">Jelajah</string>
+    <string name="settings">Pengaturan</string>
+    <string name="free_event">Gratis</string>
+    <string name="paid_event">Berbayar</string>
+    <string name="search_event">Cari Event</string>
+
+    <string name="hero_1">Temukan Event Anime Terdekat di Banjarmasin</string>
+    <string name="hero_2">Jangan lewatkan keseruan komunitas anime lokal!</string>
+    <string name="hero_button">Jelajahi Event Sekarang</string>
+
+    <string name="popular_event">Event Populer</string>
+
+    <string name="event_title">IT MATSURI</string>
+    <string name="event_date">Juli xx 20xx</string>
+
+    <string name="call_to_action_1">Punya Event? Tampilkan di Jvent Sekarang!</string>
+    <string name="call_to_action_button">Daftarkan Event Anda</string>
+
+    <string name="dark_mode">Mode Gelap</string>
+    <string name="language">Bahasa</string>
+
+    <string name="indonesia">Indonesia</string>
+    <string name="english">Inggris</string>
+</resources>
