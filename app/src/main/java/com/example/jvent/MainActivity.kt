@@ -54,7 +54,8 @@ fun JventApp() {
             Settings() // Halaman Settings untuk mengubah bahasa
         }
         composable("login") {
-            Login(navigateToMakeEvent = {navController.navigate("make_event")})
+            Login(navigateToMakeEvent = {navController.navigate("make_event")},
+                navigateToRegistration = {navController.navigate("registration")})
         }
         composable("make_event"){
             MakeEvent()

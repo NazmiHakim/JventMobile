@@ -1,5 +1,6 @@
 package com.example.jvent
 
+import android.provider.CalendarContract.Colors
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
@@ -38,22 +39,24 @@ fun LandingPage(
             ModalDrawerSheet {
                 Text(
                     stringResource(R.string.app_name),
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .background(MaterialTheme.colorScheme.secondary),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.make_event)) },
-                    icon = { Icon(Icons.Outlined.Add, contentDescription = null) },
+                    label = { Text(stringResource(R.string.make_event), color = MaterialTheme.colorScheme.onPrimary) },
+                    icon = { Icon(Icons.Outlined.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
                         navigateToRegistration()
-                    }
+                    },
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.explore)) },
-                    icon = { Icon(Icons.Outlined.Explore, contentDescription = null) },
+                    label = { Text(stringResource(R.string.explore), color = MaterialTheme.colorScheme.onPrimary) },
+                    icon = { Icon(Icons.Outlined.Explore, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -61,8 +64,8 @@ fun LandingPage(
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.settings)) },
-                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null) },
+                    label = { Text(stringResource(R.string.settings), color = MaterialTheme.colorScheme.onPrimary) },
+                    icon = { Icon(Icons.Outlined.Settings, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
                     selected = false,
                     onClick = {
                         scope.launch { drawerState.close() }
@@ -120,7 +123,7 @@ fun AppBar(onMenuClick: () -> Unit) {
                 Icon(Icons.Filled.Menu, contentDescription = "Menu")
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.primaryContainer)
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
     )
 }
 
@@ -162,7 +165,7 @@ fun HeroSection() {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 stringResource(R.string.hero_2),
-                color = MaterialTheme.colorScheme.onPrimary,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -178,7 +181,10 @@ fun HeroSection() {
 
 @Composable
 fun PopularEventSection() {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(modifier = Modifier
+        .padding(16.dp)
+        .background(MaterialTheme.colorScheme.background)
+    ) {
         Text(stringResource(R.string.popular_event), fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
@@ -197,10 +203,12 @@ fun PopularEventSection() {
 @Composable
 fun EventCard() {
     Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .width(220.dp)
             .height(240.dp),
         shape = RoundedCornerShape(12.dp)
+
     ) {
         Box {
             AsyncImage(
@@ -235,7 +243,7 @@ fun EventCard() {
             Text(
                 text = stringResource(R.string.free_event),
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -246,7 +254,7 @@ fun CallToAction() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceVariant)
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -259,9 +267,9 @@ fun CallToAction() {
         Spacer(modifier = Modifier.height(12.dp))
         Button(
             onClick = { /* TODO */ },
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
         ) {
-            Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)
+            Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }

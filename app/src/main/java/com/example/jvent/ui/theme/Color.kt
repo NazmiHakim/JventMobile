@@ -13,8 +13,10 @@ val Pink40 = Color(0xFF7D5260)
 
 // Custom App Colors
 val CharcoalBlack = Color(0xFF1E1E2F)     // Background utama
-val ElectricPurple = Color(0xFFA259FF)    // Tombol, heading, accent utama
+val ElectricPurple = Color(0xFF582CCB)    // Tombol, heading, accent utama
 val MintGreen = Color(0xFF4ADEDE)         // Ikon, garis bawah, hover efek
 val OffWhite = Color(0xFFF8F8F8)          // Teks utama
-val GrayishBlue = Color(0xFF3E4C59)       // Background card & border section
-val White = Color(0xffffff)
+val GrayishBlue = Color(0xFF3B4E59)       // Background card & border section
+val Jaguar = Color(0xFF1E1E2F)
+val Magenta = Color(0xFFCC1DD2)
+

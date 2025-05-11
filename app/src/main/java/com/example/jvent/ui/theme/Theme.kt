@@ -16,14 +16,16 @@ private val LightColorScheme = lightColorScheme(
     primary = ElectricPurple,       // Tombol, heading, accent utama
     secondary = GrayishBlue,        // Background card & border section
     tertiary = MintGreen,           // Ikon, garis bawah, hover efek
-    background = CharcoalBlack,     // Background utama
+    background = Jaguar,     // Background utama
     surface = GrayishBlue,          // Permukaan/card
     onPrimary = OffWhite,           // Teks di atas tombol utama
     onSecondary = OffWhite,         // Teks di atas secondary
     onTertiary = CharcoalBlack,     // Teks di atas ikon
     onBackground = OffWhite,        // Teks utama
     onSurface = OffWhite,            // Teks di atas permukaan/card
+    onSecondaryContainer = Magenta       //Warna Button Kedua
 )
+
 
 private val DarkColorScheme = darkColorScheme(
     primary = ElectricPurple,
@@ -40,8 +42,8 @@ private val DarkColorScheme = darkColorScheme(
 
 @Composable
 fun JventTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = true,
+    darkTheme: Boolean = false,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -57,8 +59,12 @@ fun JventTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
+            window.statusBarColor = colorScheme.background.toArgb() //for changing the top android bar
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+
+            window.navigationBarColor = colorScheme.background.toArgb()
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
+
         }
     }
 
