@@ -14,6 +14,7 @@ import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.*
@@ -100,7 +101,7 @@ fun LandingPage(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(onMenuClick: () -> Unit) {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
     TopAppBar(
         title = {

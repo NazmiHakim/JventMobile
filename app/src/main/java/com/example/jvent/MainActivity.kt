@@ -58,7 +58,7 @@ fun JventApp() {
                 navigateToRegistration = {navController.navigate("registration")})
         }
         composable("make_event"){
-            MakeEvent()
+            MakeEvent(navigateToDashboard = {navController.navigate("dashboard")})
         }
         composable("dashboard") {
             Dashboard()
