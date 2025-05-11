@@ -1,19 +1,39 @@
 package com.example.jvent
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -22,24 +42,27 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun Dashboard() {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    val tabs = listOf("Event Aktif", "Event Lalu")
+    val tabs = listOf(
+        stringResource(R.string.active_event),
+        stringResource(R.string.past_event)
+    )
 
     val dummyEvents = listOf(
-        "World Music Festival",
-        "World Music Festival",
-        "World Music Festival"
+        stringResource(R.string.sample_event_title),
+        stringResource(R.string.sample_event_title),
+        stringResource(R.string.sample_event_title)
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Event Saya", fontSize = 20.sp) },
+                title = { Text(stringResource(R.string.my_event), fontSize = 20.sp) },
                 actions = {
                     Button(
                         onClick = {},
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A49FF))
                     ) {
-                        Text("Buat Event")
+                        Text(stringResource(R.string.create_event))
                     }
                 }
             )
@@ -52,17 +75,14 @@ fun Dashboard() {
                 .padding(16.dp)
         ) {
             item {
-                // Search bar
                 OutlinedTextField(
                     value = "",
                     onValueChange = {},
-                    placeholder = { Text("Cari event disini") },
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    placeholder = { Text(stringResource(R.string.search_event_here)) },
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Tab Event Aktif / Lalu
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -82,7 +102,6 @@ fun Dashboard() {
             }
 
             item {
-                // Event Horizontal List
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -103,13 +122,13 @@ fun Dashboard() {
                         .wrapContentWidth(Alignment.CenterHorizontally),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7A49FF))
                 ) {
-                    Text("Buat Event")
+                    Text(stringResource(R.string.create_event))
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    "Hai, terima kasih telah menggunakan Jvent",
+                    stringResource(R.string.thank_you_message),
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally),
@@ -117,7 +136,7 @@ fun Dashboard() {
                 )
 
                 Text(
-                    "Silahkan Buat Event Mu dengan klik Button Diatas!",
+                    stringResource(R.string.create_event_prompt),
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentWidth(Alignment.CenterHorizontally),
@@ -140,7 +159,6 @@ fun EventCard(title: String) {
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2D2D3A))
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // Gambar (placeholder)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -149,10 +167,10 @@ fun EventCard(title: String) {
             )
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(title, color = Color.White, fontWeight = FontWeight.Bold)
-                Text("25-27 July, 2025 · Valencia, ES", color = Color.LightGray, fontSize = 12.sp)
-                Text("Rp. 100.000", color = Color.White, fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.event_date_location), color = Color.LightGray, fontSize = 12.sp)
+                Text(stringResource(R.string.free_event), color = Color.White, fontWeight = FontWeight.Medium)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text("Imagi", color = Color.White, fontSize = 12.sp)
+                Text(stringResource(R.string.event_organizer), color = Color.White, fontSize = 12.sp)
             }
         }
     }

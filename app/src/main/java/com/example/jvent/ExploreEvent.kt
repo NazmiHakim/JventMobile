@@ -3,23 +3,20 @@ package com.example.jvent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.*
 import coil.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -34,7 +31,7 @@ fun ExploreEvent(navigateToDetail: () -> Unit) {
                     OutlinedTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
-                        placeholder = { Text("Cari event disini") },
+                        placeholder = { Text(stringResource(R.string.search_placeholder)) },
                         leadingIcon = {
                             Icon(Icons.Default.Search, contentDescription = "Search")
                         },
@@ -60,7 +57,7 @@ fun ExploreEvent(navigateToDetail: () -> Unit) {
         ) {
             item {
                 Text(
-                    text = "Event dengan kata \"${searchQuery}\"",
+                    text = stringResource(R.string.search_result_prefix).format(searchQuery),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -76,10 +73,16 @@ fun ExploreEvent(navigateToDetail: () -> Unit) {
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("Cari menurut waktu", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.search_by_time), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf("Hari Ini", "Besok", "Minggu Ini", "Minggu Depan", "Bulan Depan").forEach {
+                    listOf(
+                        stringResource(R.string.today),
+                        stringResource(R.string.tomorrow),
+                        stringResource(R.string.this_week),
+                        stringResource(R.string.next_week),
+                        stringResource(R.string.next_month)
+                    ).forEach {
                         FilterChip(text = it)
                     }
                 }
@@ -87,16 +90,16 @@ fun ExploreEvent(navigateToDetail: () -> Unit) {
 
             item {
                 Spacer(modifier = Modifier.height(24.dp))
-                Text("Cari menurut harga", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.search_by_price), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(text = "Gratis", modifier = Modifier.weight(1f))
-                    FilterChip(text = "Berbayar", modifier = Modifier.weight(1f))
+                    FilterChip(text = stringResource(R.string.free_event), modifier = Modifier.weight(1f))
+                    FilterChip(text = stringResource(R.string.paid_event), modifier = Modifier.weight(1f))
                 }
             }
 
             item {
-                Spacer(modifier = Modifier.height(48.dp)) // bottom padding
+                Spacer(modifier = Modifier.height(48.dp))
             }
         }
     }
@@ -115,7 +118,7 @@ fun ExploreEventCard(navigateToDetail: () -> Unit = {}) {
         Box {
             AsyncImage(
                 model = "https://i.ibb.co/Wt2KxP0/musicfestival.jpg",
-                contentDescription = "Event Image",
+                contentDescription = stringResource(R.string.event_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -123,7 +126,7 @@ fun ExploreEventCard(navigateToDetail: () -> Unit = {}) {
             )
             Icon(
                 imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
+                contentDescription = stringResource(R.string.favorite),
                 tint = Color.Red,
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -150,6 +153,7 @@ fun ExploreEventCard(navigateToDetail: () -> Unit = {}) {
         }
     }
 }
+
 @Composable
 fun FilterChip(text: String, modifier: Modifier = Modifier) {
     Surface(

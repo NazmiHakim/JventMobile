@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -48,7 +49,7 @@ fun Login(
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = "Masuk akun Jvent",
+                    text = stringResource(id = R.string.login_title),
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -60,7 +61,7 @@ fun Login(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text(stringResource(id = R.string.email)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -71,7 +72,7 @@ fun Login(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(stringResource(id = R.string.password)) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -85,14 +86,14 @@ fun Login(
                         .fillMaxWidth()
                         .height(48.dp)
                 ) {
-                    Text("Login")
+                    Text(stringResource(id = R.string.login))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
                 TextButton(onClick = navigateToRegistration) {
-                    Text("Belum Punya Akun? Registrasi")
+                    Text(stringResource(id = R.string.dont_have_account))
                 }
                 Spacer(modifier = Modifier.height(32.dp))
             }

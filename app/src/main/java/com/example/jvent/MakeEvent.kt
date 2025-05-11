@@ -33,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,7 +43,6 @@ import androidx.compose.ui.unit.sp
 fun MakeEvent(
     navigateToDashboard: () -> Unit,
 ) {
-    // rememberSaveable untuk menyimpan input saat rotasi/recomposition
     var namaEvent by rememberSaveable { mutableStateOf("") }
     var kategoriTiket by rememberSaveable { mutableStateOf("") }
     var tanggalWaktu by rememberSaveable { mutableStateOf("") }
@@ -55,7 +55,12 @@ fun MakeEvent(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Jvent", color = Color.Cyan, fontWeight = FontWeight.Bold, fontSize = 22.sp)
+                    Text(
+                        text = stringResource(id = R.string.app_name),
+                        color = Color.Cyan,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF0E0E1C)
@@ -73,7 +78,6 @@ fun MakeEvent(
             contentPadding = PaddingValues(bottom = 100.dp)
         ) {
             item {
-                // Upload gambar
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -85,24 +89,23 @@ fun MakeEvent(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
-                        Text("Unggah gambar/poster/banner", color = Color.White)
+                        Text(stringResource(id = R.string.upload_image), color = Color.White)
                     }
                 }
             }
 
-            item { EventTextField("Nama Event", namaEvent) { namaEvent = it } }
-            item { EventTextField("Kategori Tiket", kategoriTiket) { kategoriTiket = it } }
-            item { EventTextField("Tanggal dan Waktu", tanggalWaktu) { tanggalWaktu = it } }
-            item { EventTextField("Lokasi", lokasi) { lokasi = it } }
-            item { EventTextField("Narahubung", narahubung) { narahubung = it } }
-            item { EventTextField("Lokasi Platform Event", linkPlatform) { linkPlatform = it } }
+            item { EventTextField(stringResource(id = R.string.event_name), namaEvent) { namaEvent = it } }
+            item { EventTextField(stringResource(id = R.string.ticket_category), kategoriTiket) { kategoriTiket = it } }
+            item { EventTextField(stringResource(id = R.string.date_time), tanggalWaktu) { tanggalWaktu = it } }
+            item { EventTextField(stringResource(id = R.string.location), lokasi) { lokasi = it } }
+            item { EventTextField(stringResource(id = R.string.contact_person), narahubung) { narahubung = it } }
+            item { EventTextField(stringResource(id = R.string.platform_link), linkPlatform) { linkPlatform = it } }
 
-            // Deskripsi (multiline)
             item {
                 OutlinedTextField(
                     value = deskripsi,
                     onValueChange = { deskripsi = it },
-                    label = { Text("Deskripsi Event") },
+                    label = { Text(stringResource(id = R.string.description)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp),
@@ -117,14 +120,13 @@ fun MakeEvent(
                 )
             }
 
-            // Tombol Buat Event
             item {
                 Button(
                     onClick = { navigateToDashboard() },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7C3AED))
                 ) {
-                    Text("Buat Event Sekarang")
+                    Text(stringResource(id = R.string.create_event_now))
                 }
             }
         }

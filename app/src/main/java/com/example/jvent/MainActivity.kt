@@ -66,8 +66,5 @@ fun JventApp() {
         composable("detail") {
             Detail()
         }
-        composable("filter") {
-            Filter()
-        }
     }
 }

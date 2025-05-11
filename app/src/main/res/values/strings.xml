@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Jvent</string>
 
+    //landing page
     <string name="make_event">Buat Event</string>
     <string name="explore">Jelajah</string>
     <string name="settings">Pengaturan</string>
@@ -20,14 +21,14 @@
     <string name="call_to_action_1">Punya Event? Tampilkan di Jvent Sekarang!</string>
     <string name="call_to_action_button">Daftarkan Event Anda</string>
 
-
+    //settings
     <string name="dark_mode">Mode Gelap</string>
     <string name="language">Bahasa</string>
 
     <string name="indonesia">Indonesia</string>
     <string name="english">Inggris</string>
 
-
+    //register and login
     <string name="make_account">Buat akun Jvent kamu</string>
     <string name="register_to_make_event">daftar untuk membuat event</string>
 
@@ -38,5 +39,46 @@
     <string name="register">Daftar</string>
     <string name="have_account">Punya Akun? Login</string>
     <string name="or_continue_with">atau lanjutkan dengan</string>
+
+    <string name="login_title">Masuk akun Jvent</string>
+    <string name="login">Login</string>
+    <string name="dont_have_account">Belum Punya Akun? Registrasi</string>
+
+    //make event
+    <string name="upload_image">Unggah gambar/poster/banner</string>
+    <string name="event_name">Nama Event</string>
+    <string name="ticket_category">Kategori Tiket</string>
+    <string name="date_time">Tanggal dan Waktu</string>
+    <string name="location">Lokasi</string>
+    <string name="contact_person">Narahubung</string>
+    <string name="platform_link">Lokasi Platform Event</string>
+    <string name="description">Deskripsi Event</string>
+    <string name="create_event_now">Buat Event Sekarang</string>
+
+    //explore event
+    <string name="search_placeholder">Cari event disini</string>
+    <string name="search_result_prefix">Event dengan kata "%1$s"</string>
+    <string name="search_by_time">Cari menurut waktu</string>
+    <string name="today">Hari Ini</string>
+    <string name="tomorrow">Besok</string>
+    <string name="this_week">Minggu Ini</string>
+    <string name="next_week">Minggu Depan</string>
+    <string name="next_month">Bulan Depan</string>
+    <string name="search_by_price">Cari menurut harga</string>
+    <string name="event_image">Event Image</string>
+    <string name="favorite">Favorite</string>
+
+    //dashboard
+    <string name="my_event">Event Saya</string>
+    <string name="create_event">Buat Event</string>
+    <string name="search_event_here">Cari event disini</string>
+    <string name="active_event">Event Aktif</string>
+    <string name="past_event">Event Lalu</string>
+    <string name="sample_event_title">World Music Festival</string>
+    <string name="thank_you_message">Hai, terima kasih telah menggunakan Jvent</string>
+    <string name="create_event_prompt">Silahkan Buat Event Mu dengan klik Button Diatas!</string>
+    <string name="event_date_location">25-27 July, 2025 · Valencia, ES</string>
+    <string name="event_organizer">Imagi</string>
+
 
 </resources>
