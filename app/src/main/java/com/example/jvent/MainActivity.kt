@@ -9,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.jvent.ui.theme.JventTheme
-import java.util.Locale
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +39,8 @@ fun JventApp() {
             LandingPage(
                 navigateToRegistration = { navController.navigate("registration") },
                 navigateToExploreEvent = { navController.navigate("explore") },
-                navigateToSettings = { navController.navigate("settings") }
+                navigateToSettings = { navController.navigate("settings") },
+                navigateToDetail = {navController.navigate("detail")}
 
             )
         }
@@ -48,7 +48,7 @@ fun JventApp() {
             Registration(navigateToLogin = {navController.navigate("login")})
         }
         composable("explore") {
-            ExploreEvent()
+            ExploreEvent(navigateToDetail = {navController.navigate("detail")})
         }
         composable("settings") {
             Settings() // Halaman Settings untuk mengubah bahasa

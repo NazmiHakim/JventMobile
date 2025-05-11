@@ -2,7 +2,6 @@ package com.example.jvent
 
 import android.content.Context
 import android.content.res.Configuration
-import android.os.Build
 import java.util.Locale
 
 fun setLocale(context: Context, language: String) {

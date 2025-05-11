@@ -20,9 +20,23 @@
     <string name="call_to_action_1">Punya Event? Tampilkan di Jvent Sekarang!</string>
     <string name="call_to_action_button">Daftarkan Event Anda</string>
 
+
     <string name="dark_mode">Mode Gelap</string>
     <string name="language">Bahasa</string>
 
     <string name="indonesia">Indonesia</string>
     <string name="english">Inggris</string>
+
+
+    <string name="make_account">Buat akun Jvent kamu</string>
+    <string name="register_to_make_event">daftar untuk membuat event</string>
+
+    <string name="username">Username</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Ketik Ulang Passwod</string>
+    <string name="register">Daftar</string>
+    <string name="have_account">Punya Akun? Login</string>
+    <string name="or_continue_with">atau lanjutkan dengan</string>
+
 </resources>

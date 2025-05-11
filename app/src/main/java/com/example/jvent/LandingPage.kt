@@ -29,7 +29,8 @@ import kotlinx.coroutines.launch
 fun LandingPage(
     navigateToRegistration: () -> Unit,
     navigateToExploreEvent: () -> Unit,
-    navigateToSettings: () -> Unit
+    navigateToSettings: () -> Unit,
+    navigateToDetail: () -> Unit
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -89,7 +90,7 @@ fun LandingPage(
             ) {
                 item { HeroSection() }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
-                item { PopularEventSection() }
+                item { PopularEventSection(navigateToDetail = navigateToDetail) }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
                 item { CallToAction() }
             }
@@ -181,7 +182,7 @@ fun HeroSection() {
 }
 
 @Composable
-fun PopularEventSection() {
+fun PopularEventSection(navigateToDetail: () -> Unit) {
     Column(modifier = Modifier
         .padding(16.dp)
         .background(MaterialTheme.colorScheme.background)
@@ -195,20 +196,21 @@ fun PopularEventSection() {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(5) {
-                EventCard()
+                EventCard(navigateToDetail = navigateToDetail)
             }
         }
     }
 }
 
 @Composable
-fun EventCard() {
+fun EventCard(navigateToDetail: () -> Unit) {
     Card(
+        onClick = navigateToDetail,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .width(220.dp)
             .height(240.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
 
     ) {
         Box {

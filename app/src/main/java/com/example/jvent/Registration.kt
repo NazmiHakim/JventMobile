@@ -1,18 +1,33 @@
 package com.example.jvent
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Facebook
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -40,14 +55,14 @@ fun Registration(navigateToLogin: () -> Unit) {
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = "Buat akun Jvent kamu",
+                    text = stringResource(R.string.make_account),
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "daftar untuk membuat event",
+                    text = stringResource(R.string.register_to_make_event),
                     style = TextStyle(fontSize = 14.sp),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.fillMaxWidth(),
@@ -60,7 +75,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 OutlinedTextField(
                     value = username,
                     onValueChange = { username = it },
-                    label = { Text("Username") },
+                    label = { Text(stringResource(R.string.username)) },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(12.dp))
@@ -70,7 +85,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text(stringResource(R.string.email)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -81,7 +96,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(stringResource(R.string.password)) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -92,7 +107,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 OutlinedTextField(
                     value = confirmPassword,
                     onValueChange = { confirmPassword = it },
-                    label = { Text("Re-enter Password") },
+                    label = { Text(stringResource(R.string.confirm_password)) },
                     visualTransformation = PasswordVisualTransformation(),
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -106,20 +121,20 @@ fun Registration(navigateToLogin: () -> Unit) {
                         .fillMaxWidth()
                         .height(48.dp)
                 ) {
-                    Text("Daftar")
+                    Text(stringResource(R.string.register))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
                 TextButton(onClick = navigateToLogin) {
-                    Text("Punya Akun? Login")
+                    Text(stringResource(R.string.have_account))
                 }
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
-                Text("atau lanjutkan dengan", textAlign = TextAlign.Center)
+                Text(stringResource(R.string.or_continue_with), textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
