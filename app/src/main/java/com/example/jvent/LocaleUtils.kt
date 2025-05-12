@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.example.jvent
 
 import android.content.Context

@@ -15,7 +15,6 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun AppSplashScreen(navigateToNext: () -> Unit) {
-    // Simulasi delay selama 2 detik sebelum pindah halaman
     LaunchedEffect(Unit) {
         delay(2000)
         navigateToNext()
@@ -30,7 +29,7 @@ fun AppSplashScreen(navigateToNext: () -> Unit) {
         Text(
             text = "Jvent",
             style = MaterialTheme.typography.headlineMedium,
-            color = MaterialTheme.colorScheme.onPrimary,
+            color = MaterialTheme.colorScheme.tertiary,
             fontWeight = FontWeight.Bold,
             fontSize = 30.sp
         )

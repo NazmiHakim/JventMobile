@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Jvent</string>
 
+    <!-- landing page -->
     <string name="make_event">Create Event</string>
     <string name="explore">Explore</string>
     <string name="settings">Settings</string>
@@ -8,8 +9,8 @@
     <string name="paid_event">Paid</string>
     <string name="search_event">Search Event</string>
 
-    <string name="hero_1">Find Nearby Anime Events in Banjarmasin</string>
-    <string name="hero_2">Don’t miss the excitement of the local anime community!</string>
+    <string name="hero_1">Discover Nearby Anime Events in Banjarmasin</string>
+    <string name="hero_2">Don\'t miss the excitement of the local anime community!</string>
     <string name="hero_button">Explore Events Now</string>
 
     <string name="popular_event">Popular Events</string>
@@ -17,24 +18,26 @@
     <string name="event_title">IT MATSURI</string>
     <string name="event_date">July xx 20xx</string>
 
-    <string name="call_to_action_1">Got an Event? Showcase it on Jvent Now!</string>
+    <string name="call_to_action_1">Have an Event? Showcase it on Jvent Now!</string>
     <string name="call_to_action_button">Register Your Event</string>
 
+    <!-- settings -->
     <string name="dark_mode">Dark Mode</string>
     <string name="language">Language</string>
 
     <string name="indonesia">Indonesian</string>
     <string name="english">English</string>
 
+    <!-- register and login -->
     <string name="make_account">Create your Jvent account</string>
     <string name="register_to_make_event">register to create an event</string>
 
     <string name="username">Username</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
-    <string name="confirm_password">Re-enter Password</string>
+    <string name="confirm_password">Retype Password</string>
     <string name="register">Register</string>
-    <string name="have_account">Have an Account? Login</string>
+    <string name="have_account">Already have an account? Login</string>
     <string name="or_continue_with">or continue with</string>
 
     <string name="login_title">Login to your Jvent account</string>
@@ -55,13 +58,13 @@
     <!-- explore event -->
     <string name="search_placeholder">Search events here</string>
     <string name="search_result_prefix">Events with the keyword "%1$s"</string>
-    <string name="search_by_time">Search by Time</string>
+    <string name="search_by_time">Search by time</string>
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="this_week">This Week</string>
     <string name="next_week">Next Week</string>
     <string name="next_month">Next Month</string>
-    <string name="search_by_price">Search by Price</string>
+    <string name="search_by_price">Search by price</string>
     <string name="event_image">Event Image</string>
     <string name="favorite">Favorite</string>
 
@@ -75,5 +78,21 @@
     <string name="thank_you_message">Hi, thank you for using Jvent</string>
     <string name="create_event_prompt">Please create your event by clicking the button above!</string>
     <string name="event_date_location">25–27 July, 2025 · Valencia, ES</string>
-    <string name="event_organizer">Imagi</string>
+
+    <string name="event_location">Kota Cinema Mall, Banjarmasin</string>
+    <string name="event_time">1:00 PM – 9:00 PM WITA</string>
+    <string name="event_price">Free</string>
+    <string name="event_organizer">Organized by</string>
+    <string name="organizer_name">SHIKIFEST</string>
+
+    <string name="buy_ticket">BUY TICKET</string>
+
+    <string name="event_description">
+        Haru no Sakuragi is a Japanese Cultural event that will be held in Banjarmasin, South Kalimantan on April 6, 2025. This event is designed to welcome spring with various activities highlighting the beauty and traditions of Japanese Culture, including the blooming of sakura flowers as a symbol of hope and new beginnings.\n\n
+        The event will also feature traditional art performances, such as Japanese dances, performances by various Guest Stars, Competitions, and Cosplay showcasing your favorite characters from anime/manga/games/films.\n\n
+        Haru no Sakuragi is a chance for you to enjoy the atmosphere of Japanese spring without having to travel far. Don’t miss this vibrant experience that will bring the warmth and joy of spring!
+    </string>
+
+    <string name="poster">Event Poster</string>
+
 </resources>

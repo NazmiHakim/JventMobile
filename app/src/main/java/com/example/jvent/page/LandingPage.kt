@@ -1,4 +1,4 @@
-package com.example.jvent
+package com.example.jvent.page
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,12 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Add
@@ -24,8 +22,6 @@ import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -50,13 +46,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.EventCard
+import com.example.jvent.R
 import kotlinx.coroutines.launch
 
 @Composable
@@ -113,7 +110,7 @@ fun LandingPage(
     ) {
         Scaffold(
             topBar = {
-                AppBar(onMenuClick = { scope.launch { drawerState.open() } })
+                AppBarLanding(onMenuClick = { scope.launch { drawerState.open() } })
             }
         ) { innerPadding ->
             LazyColumn(
@@ -135,7 +132,7 @@ fun LandingPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(onMenuClick: () -> Unit) {
+fun AppBarLanding(onMenuClick: () -> Unit) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
 
     TopAppBar(
@@ -181,9 +178,12 @@ fun HeroSection() {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color(0x99000000), Color(0xCC000000)),
+                        colors = listOf(
+                            MaterialTheme.colorScheme.tertiaryContainer,
+                            MaterialTheme.colorScheme.background
+                        ),
                         startY = 0f,
-                        endY = 1000f
+                        endY = 800f
                     )
                 )
         )
@@ -206,10 +206,10 @@ fun HeroSection() {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = { /* TODO */ },
+                onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
-                Text(stringResource(R.string.hero_button), color = MaterialTheme.colorScheme.onPrimary)
+                Text(stringResource(R.string.hero_button), color = MaterialTheme.colorScheme.onBackground)
             }
         }
     }
@@ -237,56 +237,6 @@ fun PopularEventSection(navigateToDetail: () -> Unit) {
 }
 
 @Composable
-fun EventCard(navigateToDetail: () -> Unit) {
-    Card(
-        onClick = navigateToDetail,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
-        modifier = Modifier
-            .width(220.dp)
-            .height(240.dp),
-        shape = RoundedCornerShape(12.dp),
-
-    ) {
-        Box {
-            Image(
-                painter = rememberAsyncImagePainter("https://cdn.trii.global/Banner/NewsArticle/mobile/-1248124158.jpg"),
-                contentDescription = "Event Image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(140.dp)
-            )
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                tint = Color.Red,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-            )
-        }
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = stringResource(R.string.event_title),
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Text(
-                text = stringResource(R.string.event_date),
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.free_event),
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
-}
-
-@Composable
 fun CallToAction() {
     Column(
         modifier = Modifier
@@ -306,7 +256,7 @@ fun CallToAction() {
             onClick = { /* TODO */ },
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
         ) {
-            Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onPrimary)
+            Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)
         }
     }
 }

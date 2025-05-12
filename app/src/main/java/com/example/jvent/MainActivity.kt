@@ -11,23 +11,31 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.jvent.page.Dashboard
+import com.example.jvent.page.Detail
+import com.example.jvent.page.ExploreEvent
+import com.example.jvent.page.LandingPage
+import com.example.jvent.page.Login
+import com.example.jvent.page.MakeEvent
+import com.example.jvent.page.Registration
+import com.example.jvent.page.Settings
 import com.example.jvent.ui.theme.JventTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        applySavedLocale()
+
+        val isDarkMode = getDarkModePref()
         setContent {
-            JventTheme {
+            JventTheme(darkTheme = isDarkMode) {
                 JventApp()
             }
         }
     }
 
-    private fun applySavedLocale() {
+    private fun getDarkModePref(): Boolean {
         val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-        val lang = prefs.getString("language", "id") ?: "id"
-        setLocale(this, lang)
+        return prefs.getBoolean("dark_mode", false)
     }
 }
 
@@ -81,18 +89,26 @@ fun JventApp() {
                 )
             }
             composable("make_event") {
-                MakeEvent(navigateToDashboard = {
-                    navigateWithLoading(isLoading, navController,"dashboard") })
+                MakeEvent(
+                    navigateToDashboard = {
+                        navigateWithLoading(isLoading, navController,"dashboard") }
+                )
             }
             composable("dashboard") {
-                Dashboard()
+                Dashboard(
+                    navigateToDetail = {
+                        navigateWithLoading(isLoading, navController, "detail")
+                    },
+                    navigateToMakeEvent = {
+                        navigateWithLoading(isLoading, navController, "make_event")
+                    }
+                )
             }
             composable("detail") {
                 Detail()
             }
         }
 
-        // Hanya panggil NavigateWithLoading dalam composable context
         NavigateWithLoading(isLoading.value)
     }
 }

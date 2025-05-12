@@ -1,44 +1,30 @@
-package com.example.jvent
+package com.example.jvent.page
 
 import android.app.Activity
 import android.content.Context
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.jvent.R
+import com.example.jvent.setLocale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Settings() {
     val context = LocalContext.current
 
-    // Mengambil bahasa yang disimpan, jika tidak ada set default 'id'
     val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     val savedLang = prefs.getString("language", "id") ?: "id"
+    val savedDarkMode = prefs.getBoolean("dark_mode", false)
 
     var expanded by remember { mutableStateOf(false) }
     var selectedLanguage by remember { mutableStateOf(savedLang) }
+    var isDarkMode by remember { mutableStateOf(savedDarkMode) }
 
     Scaffold(
         topBar = {
@@ -47,7 +33,6 @@ fun Settings() {
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         }
-
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -65,9 +50,9 @@ fun Settings() {
                     TextButton(onClick = { expanded = true }) {
                         Text(
                             text = when (selectedLanguage) {
-                                "id" -> "Indonesia"
-                                "en" -> "English"
-                                else -> "Indonesia"
+                                "id" -> stringResource(R.string.indonesia)
+                                "en" -> stringResource(R.string.english)
+                                else -> stringResource(R.string.indonesia)
                             }
                         )
                     }
@@ -76,43 +61,61 @@ fun Settings() {
                         expanded = expanded,
                         onDismissRequest = { expanded = false }
                     ) {
-                        // Item untuk memilih Bahasa Indonesia
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.indonesia)) },
                             onClick = {
                                 selectedLanguage = "id"
-                                updateLanguage(context, "id") // Langsung update dan restart
+                                updateLanguage(context, "id")
                                 expanded = false
                             }
                         )
-                        // Item untuk memilih Bahasa Inggris
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.english)) },
                             onClick = {
                                 selectedLanguage = "en"
-                                updateLanguage(context, "en") // Langsung update dan restart
+                                updateLanguage(context, "en")
                                 expanded = false
                             }
                         )
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.dark_mode))
+
+                Switch(
+                    checked = isDarkMode,
+                    onCheckedChange = {
+                        isDarkMode = it
+                        saveDarkModePref(context, it)
+                        restartApp(context)
+                    }
+                )
+            }
         }
     }
 }
 
 fun updateLanguage(context: Context, language: String) {
-    // Simpan bahasa yang dipilih
     saveLanguagePref(context, language)
-    // Set locale menggunakan utility fungsi setLocale()
-    setLocale(context, language)  // Gunakan fungsi ini dari LocaleUtils.kt
-    // Restart aplikasi untuk menerapkan bahasa baru
+    setLocale(context, language)
     restartApp(context)
 }
 
 fun saveLanguagePref(context: Context, language: String) {
     val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     prefs.edit().putString("language", language).apply()
+}
+
+fun saveDarkModePref(context: Context, isDarkMode: Boolean) {
+    val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+    prefs.edit().putBoolean("dark_mode", isDarkMode).apply()
 }
 
 fun restartApp(context: Context) {

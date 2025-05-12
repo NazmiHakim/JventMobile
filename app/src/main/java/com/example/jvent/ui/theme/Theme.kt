@@ -16,31 +16,37 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val LightColorScheme = lightColorScheme(
-    primary = ElectricPurple,       // Tombol, heading, accent utama
-    secondary = GrayishBlue,        // Background card & border section
-    tertiary = MintGreen,           // Ikon, garis bawah, hover efek
-    background = Jaguar,     // Background utama
-    surface = GrayishBlue,          // Permukaan/card
-    onPrimary = OffWhite,           // Teks di atas tombol utama
-    onSecondary = Color.Gray,         // Teks di atas secondary
-    onTertiary = CharcoalBlack,     // Teks di atas ikon
-    onBackground = OffWhite,        // Teks utama
-    onSurface = OffWhite,            // Teks di atas permukaan/card
-    onSecondaryContainer = Magenta       //Warna Button Kedua
+    primary = ElectricPurple,
+    secondary = GrayishBlue,
+    tertiary = MintGreen,
+    background = Jaguar,
+    surface = GrayishBlue,
+    onPrimary = OffWhite,
+    onSecondary = Gray,
+    onTertiary = CharcoalBlack,
+    onBackground = OffWhite,
+    onSurface = OffWhite,
+    onSecondaryContainer = Magenta,
+    surfaceContainer = Red,
+    tertiaryContainer = Blackone,
+    onPrimaryContainer = Blacktwo
 )
 
-
 private val DarkColorScheme = darkColorScheme(
-    primary = ElectricPurple,
-    secondary = MintGreen,
-    tertiary = Pink80,
-    background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
-    onPrimary = Color.Black,
-    onSecondary = Color.Black,
-    onTertiary = Color.Black,
-    onBackground = Color.White,
-    onSurface = Color.White
+    primary = ElectricPurple,  // Tetap sama dengan Light Mode, karena ini adalah warna utama yang ingin di-highlight.
+    secondary = GrayishBlue,  // Gunakan warna lebih gelap dari Light Mode.
+    tertiary = MintGreen,  // Tertier warna tetap mint, cukup terang untuk kontras.
+    background = Black,  // Latar belakang gelap untuk Dark Mode.
+    surface = Blackthree,  // Surface yang sedikit lebih terang dari background, tetap gelap.
+    onPrimary = OffWhite,  // Teks di atas elemen primer perlu kontras tinggi, hitam cocok di atas ElectricPurple.
+    onSecondary = Gray,  // Warna teks untuk elemen sekunder juga hitam.
+    onTertiary = Blackone,  // Warna teks untuk elemen tertier tetap hitam.
+    onBackground = OffWhite,  // Teks di atas background gelap akan berwarna putih untuk kontras.
+    onSurface = OffWhite,  // Teks di atas surface gelap juga putih.
+    onSecondaryContainer = ElectricPurple,  // Warna teks pada container sekunder tetap cerah.
+    surfaceContainer = Blacktwo,  // Warna container surface lebih gelap agar tidak terlalu kontras.
+    tertiaryContainer = Blackone,  // Container untuk warna tertier dengan sedikit warna gelap.
+    onPrimaryContainer = OffWhite  // Teks di atas elemen kontainer primer putih untuk kontras.
 )
 
 @Composable

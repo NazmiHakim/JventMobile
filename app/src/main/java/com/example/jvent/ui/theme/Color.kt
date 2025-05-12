@@ -19,4 +19,10 @@ val OffWhite = Color(0xFFF8F8F8)          // Teks utama
 val GrayishBlue = Color(0xFF3B4E59)       // Background card & border section
 val Jaguar = Color(0xFF1E1E2F)
 val Magenta = Color(0xFFCC1DD2)
+val Gray = Color(0xFF808080)
+val Red = Color(0xFFFF0000)
+val Blackone = Color(0x99000000)
+val Blacktwo = Color(0xCC000000)
+val Black = Color(0xFF121212)
+val Blackthree = Color(0xFF1E1E1E)
 

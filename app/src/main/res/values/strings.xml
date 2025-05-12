@@ -78,5 +78,21 @@
     <string name="thank_you_message">Hai, terima kasih telah menggunakan Jvent</string>
     <string name="create_event_prompt">Silahkan Buat Event Mu dengan klik Button Diatas!</string>
     <string name="event_date_location">25–27 July, 2025 · Valencia, ES</string>
-    <string name="event_organizer">Imagi</string>
+
+    <string name="event_location">Kota Cinema Mall, Banjarmasin</string>
+    <string name="event_time">13:00 – 21:00 WITA</string>
+    <string name="event_price">Gratis</string>
+    <string name="event_organizer">Diselenggarakan oleh</string>
+    <string name="organizer_name">SHIKIFEST</string>
+
+    <string name="buy_ticket">BELI TIKET</string>
+    
+    <string name="event_description">
+        Haru no Sakuragi adalah sebuah acara Kebudayaan Jepang yang akan digelar di Banjarmasin, Kalimantan Selatan pada 6 April 2025. Acara ini dirancang untuk menyambut musim semi dengan berbagai kegiatan yang mengangkat keindahan dan tradisi Budaya Jepang, termasuk mekarnya bunga sakura sebagai simbol harapan dan awal yang baru.\n\n
+        Acara ini juga akan dimeriahkan dengan pertunjukan seni tradisional, seperti tarian khas Jepang, Performance dari berbagai Bintang Tamu, Kompetisi, hingga Cosplay yang akan menghadirkan karakter anime/manga/game/film favoritmu.\n\n
+        Haru no Sakuragi menjadi kesempatan bagi kamu untuk menikmati suasana musim semi ala Jepang tanpa harus pergi jauh. Jangan lewatkan pengalaman penuh warna ini, yang akan membawa kehangatan dan keceriaan musim semi!
+    </string>
+
+    <string name="poster">Poster Event</string>
+
 </resources>
