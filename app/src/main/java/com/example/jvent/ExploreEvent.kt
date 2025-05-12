@@ -1,5 +1,6 @@
 package com.example.jvent
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -17,7 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import coil.compose.AsyncImage
+import coil.compose.rememberAsyncImagePainter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -116,8 +117,8 @@ fun ExploreEventCard(navigateToDetail: () -> Unit = {}) {
         onClick = navigateToDetail
     ) {
         Box {
-            AsyncImage(
-                model = "https://i.ibb.co/Wt2KxP0/musicfestival.jpg",
+            Image(
+                painter = rememberAsyncImagePainter("https://cdn.trii.global/Banner/NewsArticle/mobile/-1248124158.jpg"),
                 contentDescription = stringResource(R.string.event_image),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

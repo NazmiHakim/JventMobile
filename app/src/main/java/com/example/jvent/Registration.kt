@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Facebook
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -57,6 +58,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 Text(
                     text = stringResource(R.string.make_account),
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -64,7 +66,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 Text(
                     text = stringResource(R.string.register_to_make_event),
                     style = TextStyle(fontSize = 14.sp),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
@@ -119,7 +121,8 @@ fun Registration(navigateToLogin: () -> Unit) {
                     onClick = navigateToLogin,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
                     Text(stringResource(R.string.register))
                 }
@@ -128,10 +131,14 @@ fun Registration(navigateToLogin: () -> Unit) {
 
             item {
                 TextButton(onClick = navigateToLogin) {
-                    Text(stringResource(R.string.have_account))
+                    Text(
+                        text = stringResource(R.string.have_account),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
                 Spacer(modifier = Modifier.height(12.dp))
             }
+
 
             item {
                 Text(stringResource(R.string.or_continue_with), textAlign = TextAlign.Center)

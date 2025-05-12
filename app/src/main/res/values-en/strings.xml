@@ -36,4 +36,44 @@
     <string name="register">Register</string>
     <string name="have_account">Have an Account? Login</string>
     <string name="or_continue_with">or continue with</string>
+
+    <string name="login_title">Login to your Jvent account</string>
+    <string name="login">Login</string>
+    <string name="dont_have_account">Don\'t have an account? Register</string>
+
+    <!-- make event -->
+    <string name="upload_image">Upload image/poster/banner</string>
+    <string name="event_name">Event Name</string>
+    <string name="ticket_category">Ticket Category</string>
+    <string name="date_time">Date and Time</string>
+    <string name="location">Location</string>
+    <string name="contact_person">Contact Person</string>
+    <string name="platform_link">Event Platform Link</string>
+    <string name="description">Event Description</string>
+    <string name="create_event_now">Create Event Now</string>
+
+    <!-- explore event -->
+    <string name="search_placeholder">Search events here</string>
+    <string name="search_result_prefix">Events with the keyword "%1$s"</string>
+    <string name="search_by_time">Search by Time</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="this_week">This Week</string>
+    <string name="next_week">Next Week</string>
+    <string name="next_month">Next Month</string>
+    <string name="search_by_price">Search by Price</string>
+    <string name="event_image">Event Image</string>
+    <string name="favorite">Favorite</string>
+
+    <!-- dashboard -->
+    <string name="my_event">My Events</string>
+    <string name="create_event">Create Event</string>
+    <string name="search_event_here">Search events here</string>
+    <string name="active_event">Active Events</string>
+    <string name="past_event">Past Events</string>
+    <string name="sample_event_title">World Music Festival</string>
+    <string name="thank_you_message">Hi, thank you for using Jvent</string>
+    <string name="create_event_prompt">Please create your event by clicking the button above!</string>
+    <string name="event_date_location">25–27 July, 2025 · Valencia, ES</string>
+    <string name="event_organizer">Imagi</string>
 </resources>

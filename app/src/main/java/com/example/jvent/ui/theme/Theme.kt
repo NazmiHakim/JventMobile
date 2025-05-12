@@ -2,8 +2,11 @@ package com.example.jvent.ui.theme
 
 import android.app.Activity
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
@@ -19,7 +22,7 @@ private val LightColorScheme = lightColorScheme(
     background = Jaguar,     // Background utama
     surface = GrayishBlue,          // Permukaan/card
     onPrimary = OffWhite,           // Teks di atas tombol utama
-    onSecondary = OffWhite,         // Teks di atas secondary
+    onSecondary = Color.Gray,         // Teks di atas secondary
     onTertiary = CharcoalBlack,     // Teks di atas ikon
     onBackground = OffWhite,        // Teks utama
     onSurface = OffWhite,            // Teks di atas permukaan/card

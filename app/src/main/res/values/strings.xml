@@ -77,8 +77,6 @@
     <string name="sample_event_title">World Music Festival</string>
     <string name="thank_you_message">Hai, terima kasih telah menggunakan Jvent</string>
     <string name="create_event_prompt">Silahkan Buat Event Mu dengan klik Button Diatas!</string>
-    <string name="event_date_location">25-27 July, 2025 · Valencia, ES</string>
+    <string name="event_date_location">25–27 July, 2025 · Valencia, ES</string>
     <string name="event_organizer">Imagi</string>
-
-
 </resources>

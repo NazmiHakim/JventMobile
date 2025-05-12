@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +53,7 @@ fun Login(
                 Text(
                     text = stringResource(id = R.string.login_title),
                     style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -84,16 +87,20 @@ fun Login(
                     onClick = navigateToMakeEvent,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp)
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text(stringResource(id = R.string.login))
+                    Text(text = stringResource(id = R.string.login))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
                 TextButton(onClick = navigateToRegistration) {
-                    Text(stringResource(id = R.string.dont_have_account))
+                    Text(
+                        text = stringResource(id = R.string.dont_have_account),
+                        color = MaterialTheme.colorScheme.primary
+                    )
                 }
                 Spacer(modifier = Modifier.height(32.dp))
             }

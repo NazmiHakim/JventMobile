@@ -34,8 +34,9 @@ class MainActivity : ComponentActivity() {
 fun JventApp() {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = "landing") {
-        composable("landing") {
+    NavHost(navController, startDestination = "splash") {
+        composable("splash") {
+            SplashScreen(navigateToNext = { navController.navigate("landing") { popUpTo("splash") { inclusive = true } } })
             LandingPage(
                 navigateToRegistration = { navController.navigate("registration") },
                 navigateToExploreEvent = { navController.navigate("explore") },
