@@ -36,13 +36,20 @@ fun JventApp() {
 
     NavHost(navController, startDestination = "splash") {
         composable("splash") {
-            SplashScreen(navigateToNext = { navController.navigate("landing") { popUpTo("splash") { inclusive = true } } })
+            SplashScreen(
+                navigateToNext = {
+                    navController.navigate("landing") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable("landing") {
             LandingPage(
                 navigateToRegistration = { navController.navigate("registration") },
                 navigateToExploreEvent = { navController.navigate("explore") },
                 navigateToSettings = { navController.navigate("settings") },
-                navigateToDetail = {navController.navigate("detail")}
-
+                navigateToDetail = { navController.navigate("detail") }
             )
         }
         composable("registration") {
