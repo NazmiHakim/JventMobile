@@ -4,7 +4,10 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,7 +16,6 @@ import com.example.jvent.ui.theme.JventTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Terapkan locale yang disimpan sebelum UI dibuat
         applySavedLocale()
         setContent {
             JventTheme {
@@ -29,50 +31,69 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
 @Composable
 fun JventApp() {
     val navController = rememberNavController()
+    val isLoading = remember { mutableStateOf(false) }
 
-    NavHost(navController, startDestination = "splash") {
-        composable("splash") {
-            SplashScreen(
-                navigateToNext = {
+    Box {
+        NavHost(navController, startDestination = "splash") {
+            composable("splash") {
+                AppSplashScreen {
                     navController.navigate("landing") {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
-            )
+            }
+            composable("landing") {
+                LandingPage(
+                    navigateToRegistration = {
+                        navigateWithLoading(isLoading, navController, "registration")
+                    },
+                    navigateToExploreEvent = {
+                        navigateWithLoading(isLoading, navController, "explore")
+                    },
+                    navigateToSettings = {
+                        navigateWithLoading(isLoading, navController, "settings")
+                    },
+                    navigateToDetail = {
+                        navigateWithLoading(isLoading, navController, "detail")
+                    }
+                )
+            }
+            composable("registration") {
+                Registration(navigateToLogin = {
+                    navigateWithLoading(isLoading, navController,"login") })
+            }
+            composable("explore") {
+                ExploreEvent(navigateToDetail = {
+                    navigateWithLoading(isLoading, navController,"detail") })
+            }
+            composable("settings") {
+                Settings()
+            }
+            composable("login") {
+                Login(
+                    navigateToMakeEvent = {
+                        navigateWithLoading(isLoading, navController,"make_event") },
+                    navigateToRegistration = {
+                        navigateWithLoading(isLoading, navController,"registration") }
+                )
+            }
+            composable("make_event") {
+                MakeEvent(navigateToDashboard = {
+                    navigateWithLoading(isLoading, navController,"dashboard") })
+            }
+            composable("dashboard") {
+                Dashboard()
+            }
+            composable("detail") {
+                Detail()
+            }
         }
-        composable("landing") {
-            LandingPage(
-                navigateToRegistration = { navController.navigate("registration") },
-                navigateToExploreEvent = { navController.navigate("explore") },
-                navigateToSettings = { navController.navigate("settings") },
-                navigateToDetail = { navController.navigate("detail") }
-            )
-        }
-        composable("registration") {
-            Registration(navigateToLogin = {navController.navigate("login")})
-        }
-        composable("explore") {
-            ExploreEvent(navigateToDetail = {navController.navigate("detail")})
-        }
-        composable("settings") {
-            Settings() // Halaman Settings untuk mengubah bahasa
-        }
-        composable("login") {
-            Login(navigateToMakeEvent = {navController.navigate("make_event")},
-                navigateToRegistration = {navController.navigate("registration")})
-        }
-        composable("make_event"){
-            MakeEvent(navigateToDashboard = {navController.navigate("dashboard")})
-        }
-        composable("dashboard") {
-            Dashboard()
-        }
-        composable("detail") {
-            Detail()
-        }
+
+        // Hanya panggil NavigateWithLoading dalam composable context
+        NavigateWithLoading(isLoading.value)
     }
 }
+

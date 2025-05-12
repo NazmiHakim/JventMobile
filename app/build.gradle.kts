@@ -80,7 +80,8 @@ dependencies {
         implementation("androidx.navigation:navigation-compose:2.7.7")
         implementation("androidx.compose.animation:animation:1.6.0") // atau versi terbaru Compose
         implementation ("com.google.accompanist:accompanist-navigation-animation:0.34.0")
-
+        implementation("io.coil-kt:coil-gif:2.4.0")
+        implementation ("com.airbnb.android:lottie-compose:5.0.3")
     }
 
 }
