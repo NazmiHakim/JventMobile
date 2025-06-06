@@ -1,4 +1,4 @@
-package com.example.jvent
+package com.example.jvent.components
 
 import android.os.Build
 import androidx.compose.foundation.background
@@ -18,6 +18,7 @@ import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 import coil.request.ImageRequest
+import com.example.jvent.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

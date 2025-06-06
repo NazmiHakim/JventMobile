@@ -1,4 +1,4 @@
-package com.example.jvent
+package com.example.jvent.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

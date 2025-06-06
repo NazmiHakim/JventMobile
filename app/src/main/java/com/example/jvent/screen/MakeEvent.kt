@@ -1,5 +1,6 @@
-package com.example.jvent.page
+package com.example.jvent.screen
 
+import com.example.jvent.viewmodel.EventViewModel
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,34 +19,24 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.jvent.DefaultTopBar
 import com.example.jvent.R
+import com.example.jvent.components.DefaultTopBar
 
 @Composable
 fun MakeEvent(
+    viewModel: EventViewModel = viewModel(),
     navigateToDashboard: () -> Unit,
 ) {
-    var eventName by rememberSaveable { mutableStateOf("") }
-    var ticketCategory by rememberSaveable { mutableStateOf("") }
-    var dateTime by rememberSaveable { mutableStateOf("") }
-    var location by rememberSaveable { mutableStateOf("") }
-    var organizer by rememberSaveable { mutableStateOf("") }
-    var platformLink by rememberSaveable { mutableStateOf("") }
-    var description by rememberSaveable { mutableStateOf("") }
-
     Scaffold(
         topBar = {
             DefaultTopBar(title = stringResource(id = R.string.app_name))
@@ -76,28 +67,63 @@ fun MakeEvent(
                 }
             }
 
-            item { EventTextField(stringResource(id = R.string.event_name), eventName) { eventName = it } }
-            item { EventTextField(stringResource(id = R.string.ticket_category), ticketCategory) { ticketCategory = it } }
-            item { EventTextField(stringResource(id = R.string.date_time), dateTime) { dateTime = it } }
-            item { EventTextField(stringResource(id = R.string.location), location) { location = it } }
-            item { EventTextField(stringResource(id = R.string.contact_person), organizer) { organizer = it } }
-            item { EventTextField(stringResource(id = R.string.platform_link), platformLink) { platformLink = it } }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.event_name),
+                    viewModel.eventName
+                ) { viewModel.eventName = it }
+            }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.ticket_category),
+                    viewModel.ticketCategory
+                ) { viewModel.ticketCategory = it }
+            }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.date_time),
+                    viewModel.dateTime
+                ) { viewModel.dateTime = it }
+            }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.location),
+                    viewModel.location
+                ) { viewModel.location = it }
+            }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.contact_person),
+                    viewModel.organizer
+                ) { viewModel.organizer = it }
+            }
+            item {
+                EventTextField(
+                    stringResource(id = R.string.platform_link),
+                    viewModel.platformLink
+                ) { viewModel.platformLink = it }
+            }
 
             item {
                 OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
+                    value = viewModel.description,
+                    onValueChange = { viewModel.description = it },
                     label = { Text(stringResource(id = R.string.description)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(120.dp),
-                    )
-
+                )
             }
 
             item {
                 Button(
-                    onClick = { navigateToDashboard() },
+                    onClick = {
+                        if (viewModel.validateForm()) {
+                            // Here you would typically save the event to a repository
+                            navigateToDashboard()
+                            viewModel.resetForm()
+                        }
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {

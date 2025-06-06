@@ -1,4 +1,4 @@
-package com.example.jvent.page
+package com.example.jvent.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -30,8 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.jvent.DefaultTopBar
-import com.example.jvent.EventCard
+import com.example.jvent.components.DefaultTopBar
+import com.example.jvent.components.EventCard
 import com.example.jvent.R
 
 @Composable

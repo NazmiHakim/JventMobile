@@ -1,4 +1,4 @@
-package com.example.jvent.page
+package com.example.jvent.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

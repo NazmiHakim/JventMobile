@@ -1,4 +1,4 @@
-package com.example.jvent
+package com.example.jvent.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.R
 
 @Composable
 fun EventCard(navigateToDetail: () -> Unit) {
@@ -76,4 +77,3 @@ fun EventCard(navigateToDetail: () -> Unit) {
         }
     }
 }
-
