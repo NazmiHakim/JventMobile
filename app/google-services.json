@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "819358630478",
+    "project_id": "jventmobile",
+    "storage_bucket": "jventmobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819358630478:android:91a9803621c62123d5f91f",
+        "android_client_info": {
+          "package_name": "com.example.jvent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "819358630478-b81vbkir62timppgsgsau9mvh40pcqp9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.jvent",
+            "certificate_hash": "f463665efaa329854bd896559e0dce2ef2ff89d1"
+          }
+        },
+        {
+          "client_id": "819358630478-dgr4qtaltc8m5hlm531p8hea7lqeo5qh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZQIjZSgnW5K7DpLisAvFqPI2X7j2SWgA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "819358630478-dgr4qtaltc8m5hlm531p8hea7lqeo5qh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

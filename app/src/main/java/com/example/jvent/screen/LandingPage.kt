@@ -1,4 +1,4 @@
-package com.example.jvent.page
+package com.example.jvent.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,9 +52,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.jvent.EventCard
+import com.example.jvent.components.EventCard
 import com.example.jvent.R
 import kotlinx.coroutines.launch
+
 
 @Composable
 fun LandingPage(
@@ -119,11 +120,11 @@ fun LandingPage(
                     .fillMaxSize()
                     .clipToBounds()
             ) {
-                item { HeroSection() }
+                item { HeroSection(navigateToExploreEvent = navigateToExploreEvent) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
                 item { PopularEventSection(navigateToDetail = navigateToDetail) }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-                item { CallToAction() }
+                item { CallToAction(navigateToRegistration = navigateToRegistration) }
             }
         }
     }
@@ -161,7 +162,7 @@ fun AppBarLanding(onMenuClick: () -> Unit) {
 }
 
 @Composable
-fun HeroSection() {
+fun HeroSection(navigateToExploreEvent: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -206,7 +207,7 @@ fun HeroSection() {
             )
             Spacer(modifier = Modifier.height(12.dp))
             Button(
-                onClick = {},
+                onClick = navigateToExploreEvent,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
             ) {
                 Text(stringResource(R.string.hero_button), color = MaterialTheme.colorScheme.onBackground)
@@ -217,11 +218,17 @@ fun HeroSection() {
 
 @Composable
 fun PopularEventSection(navigateToDetail: () -> Unit) {
-    Column(modifier = Modifier
-        .padding(16.dp)
-        .background(MaterialTheme.colorScheme.background)
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .height(240.dp)
     ) {
-        Text(stringResource(R.string.popular_event), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        Text(
+            stringResource(R.string.popular_event),
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold
+        )
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow(
             modifier = Modifier
@@ -237,7 +244,7 @@ fun PopularEventSection(navigateToDetail: () -> Unit) {
 }
 
 @Composable
-fun CallToAction() {
+fun CallToAction(navigateToRegistration: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -253,7 +260,7 @@ fun CallToAction() {
         )
         Spacer(modifier = Modifier.height(12.dp))
         Button(
-            onClick = { /* TODO */ },
+            onClick = navigateToRegistration,
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
         ) {
             Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)

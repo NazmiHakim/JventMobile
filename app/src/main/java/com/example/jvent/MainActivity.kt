@@ -11,14 +11,17 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.jvent.page.Dashboard
-import com.example.jvent.page.Detail
-import com.example.jvent.page.ExploreEvent
-import com.example.jvent.page.LandingPage
-import com.example.jvent.page.Login
-import com.example.jvent.page.MakeEvent
-import com.example.jvent.page.Registration
-import com.example.jvent.page.Settings
+import com.example.jvent.screen.AppSplashScreen
+import com.example.jvent.components.NavigateWithLoading
+import com.example.jvent.components.navigateWithLoading
+import com.example.jvent.screen.Dashboard
+import com.example.jvent.screen.Detail
+import com.example.jvent.screen.ExploreEvent
+import com.example.jvent.screen.LandingPage
+import com.example.jvent.screen.LoginScreen
+import com.example.jvent.screen.MakeEvent
+import com.example.jvent.screen.RegistrationScreen
+import com.example.jvent.screen.Settings
 import com.example.jvent.ui.theme.JventTheme
 
 class MainActivity : ComponentActivity() {
@@ -66,12 +69,11 @@ fun JventApp() {
                     },
                     navigateToDetail = {
                         navigateWithLoading(isLoading, navController, "detail")
-                    }
+                    },
                 )
             }
             composable("registration") {
-                Registration(navigateToLogin = {
-                    navigateWithLoading(isLoading, navController,"login") })
+                RegistrationScreen(navController)
             }
             composable("explore") {
                 ExploreEvent(navigateToDetail = {
@@ -81,12 +83,7 @@ fun JventApp() {
                 Settings()
             }
             composable("login") {
-                Login(
-                    navigateToMakeEvent = {
-                        navigateWithLoading(isLoading, navController,"make_event") },
-                    navigateToRegistration = {
-                        navigateWithLoading(isLoading, navController,"registration") }
-                )
+                LoginScreen(navController)
             }
             composable("make_event") {
                 MakeEvent(
@@ -112,4 +109,3 @@ fun JventApp() {
         NavigateWithLoading(isLoading.value)
     }
 }
-

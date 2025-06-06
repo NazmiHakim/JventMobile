@@ -1,56 +1,46 @@
-package com.example.jvent.page
+// RegistrationScreen.kt
+package com.example.jvent.screen
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Facebook
-import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.jvent.DefaultTopBar
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.jvent.R
+import com.example.jvent.components.DefaultTopBar
+import com.example.jvent.viewmodel.RegistrationViewModel
 
 @Composable
-fun Registration(navigateToLogin: () -> Unit) {
-    var username by rememberSaveable { mutableStateOf("") }
-    var email by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
-    var confirmPassword by rememberSaveable { mutableStateOf("") }
+fun RegistrationScreen(
+    navController: NavController,
+    viewModel: RegistrationViewModel = viewModel()
+) {
+    val context = LocalContext.current
 
-    Scaffold (
+    // Show error toast when error occurs
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    Scaffold(
         topBar = {
             DefaultTopBar(title = stringResource(id = R.string.app_name))
         }
-    ){ innerPadding ->
+    ) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
@@ -63,7 +53,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
                     text = stringResource(R.string.make_account),
-                    style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+                    style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
@@ -71,7 +61,7 @@ fun Registration(navigateToLogin: () -> Unit) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = stringResource(R.string.register_to_make_event),
-                    style = TextStyle(fontSize = 14.sp),
+                    style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
@@ -81,84 +71,95 @@ fun Registration(navigateToLogin: () -> Unit) {
 
             item {
                 OutlinedTextField(
-                    value = username,
-                    onValueChange = { username = it },
+                    value = viewModel.username,
+                    onValueChange = viewModel::updateUsername,
                     label = { Text(stringResource(R.string.username)) },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = viewModel.error != null
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
                 OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = viewModel.email,
+                    onValueChange = viewModel::updateEmail,
                     label = { Text(stringResource(R.string.email)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = viewModel.error != null
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
                 OutlinedTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = viewModel.password,
+                    onValueChange = viewModel::updatePassword,
                     label = { Text(stringResource(R.string.password)) },
                     visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = viewModel.error != null
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             item {
                 OutlinedTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
+                    value = viewModel.confirmPassword,
+                    onValueChange = viewModel::updateConfirmPassword,
                     label = { Text(stringResource(R.string.confirm_password)) },
                     visualTransformation = PasswordVisualTransformation(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = viewModel.error != null
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
             item {
                 Button(
-                    onClick = navigateToLogin,
+                    onClick = {
+                        viewModel.register(
+                            onSuccess = {
+                                navController.navigate("login") {
+                                    popUpTo("registration") { inclusive = true }
+                                }
+                            },
+                            onError = {
+                                // Error is already shown via LaunchedEffect
+                            }
+                        )
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    enabled = !viewModel.isLoading
                 ) {
-                    Text(stringResource(R.string.register))
+                    if (viewModel.isLoading) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    } else {
+                        Text(stringResource(R.string.register))
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
             item {
-                TextButton(onClick = navigateToLogin) {
+                TextButton(
+                    onClick = { navController.navigate("login") },
+                    enabled = !viewModel.isLoading
+                ) {
                     Text(
                         text = stringResource(R.string.have_account),
                         color = MaterialTheme.colorScheme.primary
                     )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-
-            item {
-                Text(stringResource(R.string.or_continue_with), textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-
-            item {
-                Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Default.Facebook, contentDescription = "Facebook")
-                    }
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Default.MailOutline, contentDescription = "Google")
-                    }
                 }
                 Spacer(modifier = Modifier.height(32.dp))
             }
