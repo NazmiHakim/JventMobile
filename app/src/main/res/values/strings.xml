@@ -95,4 +95,9 @@
 
     <string name="poster">Poster Event</string>
 
+    <string name="login_admin">Login Admin</string>
+    <string name="logout">Logout</string>
+
+    <string name="admin_dashboard">Admin Dashboard</string>
+
 </resources>

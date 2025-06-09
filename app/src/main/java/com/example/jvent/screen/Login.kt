@@ -42,6 +42,7 @@ import com.example.jvent.R
 fun LoginScreen(
     navController: NavController,
     onLoginSuccess: () -> Unit,
+    navigateToRegistration: () -> Unit,
     viewModel: LoginViewModel = viewModel() // Regular ViewModel
 ) {
     val context = LocalContext.current
@@ -117,7 +118,12 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         viewModel.login(
-                            onSuccess = onLoginSuccess,
+                            onSuccess = {
+                                onLoginSuccess()
+                                navController.navigate("dashboard") {
+                                    popUpTo("login") { inclusive = true }
+                                }
+                            },
                             onError = { error ->
                                 Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                             }
@@ -146,7 +152,7 @@ fun LoginScreen(
 
             item {
                 TextButton(
-                    onClick = { navController.navigate("registration") },
+                    onClick = navigateToRegistration,
                     enabled = !viewModel.isLoading
                 ) {
                     Text(

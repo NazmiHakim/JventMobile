@@ -3,6 +3,7 @@ package com.example.jvent.screen
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -14,44 +15,71 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jvent.R
+import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.viewmodel.SettingsViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Settings() {
+fun Settings(
+    navigateToLogin: () -> Unit,
+    isLoggedIn: Boolean,
+    onLogout: () -> Unit
+) {
     val context = LocalContext.current
-    val viewModel: SettingsViewModel = viewModel(factory = SettingsViewModelFactory(context))
+    val viewModel: SettingsViewModel = viewModel(
+        factory = SettingsViewModelFactory(context)
+    )
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(text = stringResource(R.string.settings)) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
+            DefaultTopBar(title = stringResource(id = R.string.settings))
         }
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            LanguageSetting(viewModel)
-            Spacer(modifier = Modifier.height(16.dp))
-            DarkModeSetting(viewModel)
+            item {
+                LanguageSetting(viewModel)
+            }
+            item {
+                DarkModeSetting(viewModel)
+            }
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                if (!isLoggedIn) {
+                    Button(
+                        onClick = navigateToLogin,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                    ) {
+                        Text(stringResource(R.string.login_admin))
+                    }
+                } else {
+                    Button(
+                        onClick = onLogout,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(stringResource(R.string.logout))
+                    }
+                }
+            }
         }
     }
 }
 
 @Composable
 private fun LanguageSetting(viewModel: SettingsViewModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(stringResource(R.string.language))
-
-        Box {
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(stringResource(R.string.language))
             TextButton(onClick = { viewModel.toggleLanguageDropdown() }) {
                 Text(
                     text = when (viewModel.selectedLanguage) {
@@ -61,20 +89,20 @@ private fun LanguageSetting(viewModel: SettingsViewModel) {
                     }
                 )
             }
+        }
 
-            DropdownMenu(
-                expanded = viewModel.isLanguageDropdownExpanded,
-                onDismissRequest = { viewModel.toggleLanguageDropdown() }
-            ) {
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.indonesia)) },
-                    onClick = { viewModel.updateLanguage("id") }
-                )
-                DropdownMenuItem(
-                    text = { Text(stringResource(R.string.english)) },
-                    onClick = { viewModel.updateLanguage("en") }
-                )
-            }
+        DropdownMenu(
+            expanded = viewModel.isLanguageDropdownExpanded,
+            onDismissRequest = { viewModel.toggleLanguageDropdown() }
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.indonesia)) },
+                onClick = { viewModel.updateLanguage("id") }
+            )
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.english)) },
+                onClick = { viewModel.updateLanguage("en") }
+            )
         }
     }
 }
@@ -87,7 +115,6 @@ private fun DarkModeSetting(viewModel: SettingsViewModel) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(stringResource(R.string.dark_mode))
-
         Switch(
             checked = viewModel.isDarkMode,
             onCheckedChange = { viewModel.toggleDarkMode(it) }

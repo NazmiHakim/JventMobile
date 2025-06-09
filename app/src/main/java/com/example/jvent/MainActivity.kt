@@ -11,10 +11,10 @@ import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.jvent.screen.AppSplashScreen
 import com.example.jvent.components.NavigateWithLoading
 import com.example.jvent.components.navigateWithLoading
 import com.example.jvent.repository.AuthRepository
+import com.example.jvent.screen.AppSplashScreen
 import com.example.jvent.screen.Dashboard
 import com.example.jvent.screen.Detail
 import com.example.jvent.screen.ExploreEvent
@@ -60,7 +60,8 @@ fun JventApp(auth: FirebaseAuth) {
         NavHost(navController, startDestination = "splash") {
             composable("splash") {
                 AppSplashScreen {
-                    navController.navigate("landing") {
+                    val destination = "landing"
+                    navController.navigate(destination) {
                         popUpTo("splash") { inclusive = true }
                     }
                 }
@@ -79,17 +80,34 @@ fun JventApp(auth: FirebaseAuth) {
                     navigateToDetail = {
                         navigateWithLoading(isLoading, navController, "detail")
                     },
+                    navigateToDashboard = {
+                        navigateWithLoading(isLoading, navController, "dashboard")
+                    },
+                    isLoggedIn = isUserLoggedIn.value
                 )
             }
             composable("registration") {
                 RegistrationScreen(navController)
             }
+            composable("settings") {
+                Settings(
+                    navigateToLogin = {
+                        navigateWithLoading(isLoading, navController, "login")
+                    },
+                    isLoggedIn = isUserLoggedIn.value,
+                    onLogout = {
+                        AuthRepository.logout()
+                        isUserLoggedIn.value = false
+                        navController.navigate("landing") {
+                            popUpTo("dashboard") { inclusive = true }
+                        }
+                    }
+                )
+            }
+
             composable("explore") {
                 ExploreEvent(navigateToDetail = {
                     navigateWithLoading(isLoading, navController,"detail") })
-            }
-            composable("settings") {
-                Settings()
             }
             composable("login") {
                 LoginScreen(
@@ -99,6 +117,9 @@ fun JventApp(auth: FirebaseAuth) {
                         navController.navigate("dashboard") {
                             popUpTo("login") { inclusive = true }
                         }
+                    },
+                    navigateToRegistration = {
+                        navigateWithLoading(isLoading, navController, "registration") // ✅ tambahkan ini
                     }
                 )
             }

@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Button
@@ -52,8 +52,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.jvent.components.EventCard
 import com.example.jvent.R
+import com.example.jvent.components.EventCard
 import kotlinx.coroutines.launch
 
 
@@ -62,7 +62,9 @@ fun LandingPage(
     navigateToRegistration: () -> Unit,
     navigateToExploreEvent: () -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToDetail: () -> Unit
+    navigateToDetail: () -> Unit,
+    navigateToDashboard: () -> Unit,
+    isLoggedIn: Boolean
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -79,15 +81,17 @@ fun LandingPage(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.tertiary
                 )
-                NavigationDrawerItem(
-                    label = { Text(stringResource(R.string.make_event), color = MaterialTheme.colorScheme.onPrimary) },
-                    icon = { Icon(Icons.Outlined.Add, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
-                    selected = false,
-                    onClick = {
-                        scope.launch { drawerState.close() }
-                        navigateToRegistration()
-                    },
-                )
+                if (isLoggedIn) {
+                    NavigationDrawerItem(
+                        label = { Text(stringResource(R.string.admin_dashboard), color = MaterialTheme.colorScheme.onPrimary) },
+                        icon = { Icon(Icons.Outlined.Dashboard, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            navigateToDashboard()
+                        }
+                    )
+                }
                 NavigationDrawerItem(
                     label = { Text(stringResource(R.string.explore), color = MaterialTheme.colorScheme.onPrimary) },
                     icon = { Icon(Icons.Outlined.Explore, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
@@ -124,7 +128,7 @@ fun LandingPage(
                 item { Spacer(modifier = Modifier.height(24.dp)) }
                 item { PopularEventSection(navigateToDetail = navigateToDetail) }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-                item { CallToAction(navigateToRegistration = navigateToRegistration) }
+                //item { CallToAction(navigateToRegistration = navigateToRegistration) }
             }
         }
     }
@@ -243,27 +247,27 @@ fun PopularEventSection(navigateToDetail: () -> Unit) {
     }
 }
 
-@Composable
-fun CallToAction(navigateToRegistration: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            stringResource(R.string.call_to_action_1),
-            color = MaterialTheme.colorScheme.onSurface,
-            fontWeight = FontWeight.Bold,
-            fontSize = 20.sp
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(
-            onClick = navigateToRegistration,
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
-        ) {
-            Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)
-        }
-    }
-}
+//@Composable
+//fun CallToAction(navigateToRegistration: () -> Unit) {
+    //Column(
+        //modifier = Modifier
+            //.fillMaxWidth()
+            //.background(MaterialTheme.colorScheme.background)
+            //.padding(24.dp),
+        //horizontalAlignment = Alignment.CenterHorizontally
+    //) {
+        //Text(
+            //(R.string.call_to_action_1),
+            //color = MaterialTheme.colorScheme.onSurface,
+            //fontWeight = FontWeight.Bold,
+            //fontSize = 20.sp
+        //)
+        //Spacer(modifier = Modifier.height(12.dp))
+        //Button(
+            //onClick = navigateToRegistration,
+            //colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
+        //) {
+            //Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)
+        //}
+    //}
+//}
