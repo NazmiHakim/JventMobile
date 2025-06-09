@@ -1,14 +1,16 @@
-package com.example.jvent.viewmodel// com.example.jvent.viewmodel.LoginViewModel.kt
+package com.example.jvent.viewmodel
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.jvent.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
-    // Login form state
+class LoginViewModel(
+    private val authRepository: AuthRepository = AuthRepository()
+) : ViewModel() {
     var email by mutableStateOf("")
         private set
     var password by mutableStateOf("")
@@ -20,12 +22,12 @@ class LoginViewModel : ViewModel() {
 
     fun updateEmail(newEmail: String) {
         email = newEmail
-        error = null // Clear error when user types
+        error = null
     }
 
     fun updatePassword(newPassword: String) {
         password = newPassword
-        error = null // Clear error when user types
+        error = null
     }
 
     private fun validateForm(): Boolean {
@@ -61,24 +63,18 @@ class LoginViewModel : ViewModel() {
 
         viewModelScope.launch {
             isLoading = true
-            try {
-                // Simulate network call
-                delay(1000)
+            error = null
 
-                // In a real app, you would call your authentication service here
-                // val result = authRepository.login(email, password)
-
-                // For demo purposes, we'll just check for a test credential
-                if (email == "test@example.com" && password == "password123") {
+            authRepository.login(email, password)
+                .onSuccess {
                     onSuccess()
-                } else {
-                    onError("Invalid credentials")
                 }
-            } catch (e: Exception) {
-                onError(e.message ?: "Login failed")
-            } finally {
-                isLoading = false
-            }
+                .onFailure { e ->
+                    error = e.message ?: "Login failed"
+                    onError(error!!)
+                }
+
+            isLoading = false
         }
     }
 }

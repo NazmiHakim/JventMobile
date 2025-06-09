@@ -1,4 +1,3 @@
-// RegistrationViewModel.kt
 package com.example.jvent.viewmodel
 
 import androidx.compose.runtime.getValue
@@ -6,11 +5,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import com.example.jvent.repository.AuthRepository
 import kotlinx.coroutines.launch
 
-class RegistrationViewModel : ViewModel() {
-    // Registration form state
+class RegistrationViewModel(
+    private val authRepository: AuthRepository = AuthRepository()
+) : ViewModel() {
     var username by mutableStateOf("")
         private set
     var email by mutableStateOf("")
@@ -85,21 +85,18 @@ class RegistrationViewModel : ViewModel() {
 
         viewModelScope.launch {
             isLoading = true
-            try {
-                // Simulate network call
-                delay(1000)
+            error = null
 
-                // In a real app, you would call your registration API here
-                // val result = authRepository.register(username, email, password)
+            authRepository.register(email, password, username)
+                .onSuccess {
+                    onSuccess()
+                }
+                .onFailure { e ->
+                    error = e.message ?: "Registration failed"
+                    onError(error!!)
+                }
 
-                // For demo, we'll just simulate success
-                onSuccess()
-            } catch (e: Exception) {
-                error = e.message ?: "Registration failed"
-                onError(error!!)
-            } finally {
-                isLoading = false
-            }
+            isLoading = false
         }
     }
 }

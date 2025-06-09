@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.layout.size
 import androidx.navigation.NavController
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.R
@@ -40,9 +41,17 @@ import com.example.jvent.R
 @Composable
 fun LoginScreen(
     navController: NavController,
+    onLoginSuccess: () -> Unit,
     viewModel: LoginViewModel = viewModel() // Regular ViewModel
 ) {
     val context = LocalContext.current
+
+    // Show error toast when error occurs
+    LaunchedEffect(viewModel.error) {
+        viewModel.error?.let { error ->
+            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -108,12 +117,7 @@ fun LoginScreen(
                 Button(
                     onClick = {
                         viewModel.login(
-                            onSuccess = {
-                                // Navigate to make event on successful login
-                                navController.navigate("make_event") {
-                                    popUpTo("login") { inclusive = true }
-                                }
-                            },
+                            onSuccess = onLoginSuccess,
                             onError = { error ->
                                 Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
                             }

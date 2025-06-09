@@ -35,8 +35,10 @@ import com.example.jvent.components.EventCard
 import com.example.jvent.R
 
 @Composable
-fun Dashboard(navigateToDetail: () -> Unit,
-              navigateToMakeEvent: () -> Unit) {
+fun Dashboard(
+    navigateToDetail: () -> Unit,
+    navigateToMakeEvent: () -> Unit,
+    onLogout: () -> Unit) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf(
         stringResource(R.string.active_event),
@@ -127,6 +129,13 @@ fun Dashboard(navigateToDetail: () -> Unit,
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
+
+                Button(
+                    onClick = onLogout,
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Logout")
+                }
             }
         }
     }

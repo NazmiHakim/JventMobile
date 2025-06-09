@@ -14,6 +14,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.jvent.screen.AppSplashScreen
 import com.example.jvent.components.NavigateWithLoading
 import com.example.jvent.components.navigateWithLoading
+import com.example.jvent.repository.AuthRepository
 import com.example.jvent.screen.Dashboard
 import com.example.jvent.screen.Detail
 import com.example.jvent.screen.ExploreEvent
@@ -23,15 +24,22 @@ import com.example.jvent.screen.MakeEvent
 import com.example.jvent.screen.RegistrationScreen
 import com.example.jvent.screen.Settings
 import com.example.jvent.ui.theme.JventTheme
+import com.google.firebase.Firebase
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
 
 class MainActivity : ComponentActivity() {
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        auth = Firebase.auth
 
         val isDarkMode = getDarkModePref()
         setContent {
             JventTheme(darkTheme = isDarkMode) {
-                JventApp()
+                JventApp(auth)
             }
         }
     }
@@ -43,9 +51,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun JventApp() {
+fun JventApp(auth: FirebaseAuth) {
     val navController = rememberNavController()
     val isLoading = remember { mutableStateOf(false) }
+    val isUserLoggedIn = remember { mutableStateOf(auth.currentUser != null) }
 
     Box {
         NavHost(navController, startDestination = "splash") {
@@ -83,7 +92,15 @@ fun JventApp() {
                 Settings()
             }
             composable("login") {
-                LoginScreen(navController)
+                LoginScreen(
+                    navController = navController,
+                    onLoginSuccess = {
+                        isUserLoggedIn.value = true
+                        navController.navigate("dashboard") {
+                            popUpTo("login") { inclusive = true }
+                        }
+                    }
+                )
             }
             composable("make_event") {
                 MakeEvent(
@@ -92,14 +109,27 @@ fun JventApp() {
                 )
             }
             composable("dashboard") {
-                Dashboard(
-                    navigateToDetail = {
-                        navigateWithLoading(isLoading, navController, "detail")
-                    },
-                    navigateToMakeEvent = {
-                        navigateWithLoading(isLoading, navController, "make_event")
+                if (isUserLoggedIn.value) {
+                    Dashboard(
+                        navigateToDetail = {
+                            navigateWithLoading(isLoading, navController, "detail")
+                        },
+                        navigateToMakeEvent = {
+                            navigateWithLoading(isLoading, navController, "make_event")
+                        },
+                        // In MainActivity/JventApp
+                        onLogout = {
+                            AuthRepository.logout()
+                            isUserLoggedIn.value = false
+                            navController.navigate("landing")
+                        }
+                    )
+                } else {
+                    // Redirect to login if not authenticated
+                    navController.navigate("login") {
+                        popUpTo("dashboard") { inclusive = true }
                     }
-                )
+                }
             }
             composable("detail") {
                 Detail()
