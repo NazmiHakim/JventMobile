@@ -1,9 +1,10 @@
 package com.example.jvent.screen
 
-import com.example.jvent.viewmodel.EventViewModel
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,14 +24,19 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,11 +44,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventTextField
+import com.example.jvent.viewmodel.EventViewModel
 
+@OptIn(ExperimentalMaterial3Api::class) // Diperlukan untuk ExposedDropdownMenuBox
 @Composable
 fun MakeEvent(
     navigateToDashboard: () -> Unit,
@@ -50,7 +59,6 @@ fun MakeEvent(
     val viewModel: EventViewModel = viewModel()
     val context = LocalContext.current
 
-    // Launcher untuk memilih gambar dari gallery
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
@@ -60,16 +68,16 @@ fun MakeEvent(
         }
     )
 
-    // Tampilkan error jika ada
+    // Tampilkan error menggunakan Toast, karena validasi sekarang ada di ViewModel
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
 
     Scaffold(
         topBar = {
-            DefaultTopBar(title = stringResource(id = R.string.app_name))
+            DefaultTopBar(title = stringResource(id = R.string.make_event))
         }
     ) { innerPadding ->
         LazyColumn(
@@ -116,11 +124,12 @@ fun MakeEvent(
                     onValueChange = { viewModel.eventName = it }
                 )
             }
+            // * Ubah "Contact Person" menjadi "Penyelenggara Event"
             item {
                 EventTextField(
-                    label = stringResource(id = R.string.ticket_category),
-                    value = viewModel.ticketCategory,
-                    onValueChange = { viewModel.ticketCategory = it }
+                    label = "Penyelenggara Event", // Langsung ganti atau gunakan string resource baru
+                    value = viewModel.organizer,
+                    onValueChange = { viewModel.organizer = it }
                 )
             }
             item {
@@ -137,18 +146,68 @@ fun MakeEvent(
                     onValueChange = { viewModel.location = it }
                 )
             }
+
+            // + Tambahkan Dropdown untuk Tipe Event
             item {
-                EventTextField(
-                    label = stringResource(id = R.string.contact_person),
-                    value = viewModel.organizer,
-                    onValueChange = { viewModel.organizer = it }
-                )
+                val eventTypes = listOf("Gratis", "Berbayar")
+                var expanded by remember { mutableStateOf(false) }
+
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    OutlinedTextField(
+                        value = viewModel.eventType,
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Tipe Event") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
+                    )
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ) {
+                        eventTypes.forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type) },
+                                onClick = {
+                                    viewModel.eventType = type
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
             }
+
+            // + Tambahkan Input Harga jika "Berbayar"
+            if (viewModel.eventType == "Berbayar") {
+                item {
+                    EventTextField(
+                        label = "Harga Event (Contoh: Rp 25.000)",
+                        value = viewModel.price,
+                        onValueChange = { viewModel.price = it },
+                    )
+                }
+            }
+
             item {
                 EventTextField(
                     label = stringResource(id = R.string.platform_link),
                     value = viewModel.platformLink,
                     onValueChange = { viewModel.platformLink = it }
+                )
+            }
+            item {
+                EventTextField(
+                    label = stringResource(id = R.string.ticket_category),
+                    value = viewModel.ticketCategory,
+                    onValueChange = { viewModel.ticketCategory = it }
                 )
             }
 
@@ -169,11 +228,13 @@ fun MakeEvent(
                         viewModel.createEvent(
                             context = context,
                             onSuccess = {
+                                Toast.makeText(context, "Event berhasil dibuat!", Toast.LENGTH_SHORT).show()
                                 navigateToDashboard()
                                 viewModel.resetForm()
                             },
                             onError = {
-                                // Error handling already done via LaunchedEffect
+                                // Toast sudah ditangani oleh LaunchedEffect, tapi bisa juga ditambahkan di sini jika perlu
+                                // Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                             }
                         )
                     },

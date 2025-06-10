@@ -35,6 +35,10 @@ class EventViewModel : ViewModel() {
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
 
+    // + Tambahkan state untuk field baru
+    var eventType by mutableStateOf("Gratis") // Opsi: "Gratis" atau "Berbayar"
+    var price by mutableStateOf("")
+
     fun resetForm() {
         eventName = ""
         ticketCategory = ""
@@ -44,24 +48,37 @@ class EventViewModel : ViewModel() {
         platformLink = ""
         description = ""
         imageUri = null
+        // + Reset state baru
+        eventType = "Gratis"
+        price = ""
     }
 
+    // * Perbarui validasi
     private fun validateForm(): Boolean {
+        error = null // Reset error sebelum validasi
         return when {
+            imageUri == null -> {
+                error = "Poster/gambar event tidak boleh kosong"
+                false
+            }
             eventName.isBlank() -> {
-                error = "Event name cannot be empty"
+                error = "Nama event tidak boleh kosong"
                 false
             }
             dateTime.isBlank() -> {
-                error = "Date and time cannot be empty"
+                error = "Tanggal dan waktu tidak boleh kosong"
                 false
             }
             location.isBlank() -> {
-                error = "Location cannot be empty"
+                error = "Lokasi tidak boleh kosong"
                 false
             }
-            imageUri == null -> {
-                error = "Please select an image"
+            organizer.isBlank() -> {
+                error = "Penyelenggara event tidak boleh kosong"
+                false
+            }
+            eventType == "Berbayar" && price.isBlank() -> {
+                error = "Harga event tidak boleh kosong jika event berbayar"
                 false
             }
             else -> true
@@ -73,6 +90,12 @@ class EventViewModel : ViewModel() {
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
+        // * Gunakan validasi yang sudah diperbarui
+        if (!validateForm()) {
+            onError(error!!)
+            return
+        }
+
         if (FirebaseAuth.getInstance().currentUser == null) {
             onError("User must be logged in")
             return
@@ -83,7 +106,6 @@ class EventViewModel : ViewModel() {
             error = null
 
             try {
-                // Upload gambar ke Imgur
                 val imageUrl = uploadImageToImgur(
                     imageUri = imageUri!!,
                     title = eventName,
@@ -92,7 +114,7 @@ class EventViewModel : ViewModel() {
                     context = context
                 )
 
-                // Simpan event ke Firestore
+                // * Sertakan field baru saat membuat objek Event
                 val event = Event(
                     title = eventName,
                     description = description,
@@ -101,13 +123,15 @@ class EventViewModel : ViewModel() {
                     organizer = organizer,
                     platformLink = platformLink,
                     ticketCategory = ticketCategory,
-                    imageUrl = imageUrl
+                    imageUrl = imageUrl,
+                    eventType = eventType, // + Tambahkan
+                    price = if (eventType == "Gratis") "Gratis" else price // + Tambahkan
                 )
 
                 saveEventToFirestore(event)
                 onSuccess()
             } catch (e: Exception) {
-                error = e.message ?: "Failed to create event"
+                error = e.message ?: "Gagal membuat event"
                 onError(error!!)
             } finally {
                 isLoading = false
@@ -120,10 +144,9 @@ class EventViewModel : ViewModel() {
         title: String,
         description: String,
         clientId: String,
-        context: android.content.Context // Add context parameter
+        context: android.content.Context
     ): String {
         val inputStream = context.contentResolver.openInputStream(imageUri)
-
         val file = withContext(Dispatchers.IO) {
             File.createTempFile("img", ".jpg").apply {
                 inputStream?.use { input ->
@@ -134,20 +157,16 @@ class EventViewModel : ViewModel() {
                 inputStream?.close()
             }
         }
-
         val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
         val imagePart = MultipartBody.Part.createFormData("image", file.name, requestFile)
-
         val titlePart = title.toRequestBody("text/plain".toMediaTypeOrNull())
         val descriptionPart = description.toRequestBody("text/plain".toMediaTypeOrNull())
-
         val response = imgurApiService.uploadImage(
             authHeader = "Client-ID $clientId",
             image = imagePart,
             title = titlePart,
             description = descriptionPart
         )
-
         if (response.isSuccessful && response.body()?.success == true) {
             return response.body()?.data?.link ?: throw Exception("Image link not found")
         } else {

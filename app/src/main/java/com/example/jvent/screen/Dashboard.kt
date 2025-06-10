@@ -79,7 +79,10 @@ fun Dashboard(
                     platformLink = doc.getString("platformLink") ?: "",
                     ticketCategory = doc.getString("ticketCategory") ?: "",
                     imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: ""
+                    userId = doc.getString("userId") ?: "",
+                    // + Tambahkan field baru saat mapping
+                    eventType = doc.getString("eventType") ?: "Gratis",
+                    price = doc.getString("price") ?: ""
                 )
             }
         } catch (e: Exception) {

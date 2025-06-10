@@ -77,9 +77,17 @@ fun EventCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = event.ticketCategory,
+                text = if (event.eventType == "Gratis") "Gratis" else event.price, // Tampilkan harga atau gratis
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
+            )
+            // + Tambahkan teks untuk penyelenggara
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "by: ${event.organizer}",
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSecondary,
+                maxLines = 1
             )
         }
     }
