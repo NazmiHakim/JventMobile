@@ -220,7 +220,7 @@ fun ExploreEventCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .width(220.dp)
-            .height(240.dp),
+            .height(270.dp),
         shape = RoundedCornerShape(12.dp),
         onClick = navigateToDetail
     ) {
@@ -254,9 +254,14 @@ fun ExploreEventCard(
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface
             )
+            Text(
+                text = event.price,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = event.ticketCategory,
+                text = event.organizer,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )

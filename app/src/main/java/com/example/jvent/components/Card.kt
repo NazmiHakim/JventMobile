@@ -40,7 +40,7 @@ fun EventCard(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
         modifier = Modifier
             .width(220.dp)
-            .height(240.dp),
+            .height(280.dp),
         shape = RoundedCornerShape(12.dp)
     ) {
         Box {
@@ -50,7 +50,7 @@ fun EventCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp)
+                    .height(130.dp)
             )
 
             Icon(
