@@ -2,17 +2,10 @@ package com.example.jvent.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -20,33 +13,15 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.NavigationDrawerItem
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,20 +29,57 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.jvent.R
 import com.example.jvent.components.EventCard
+import com.example.jvent.model.Event
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
-
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LandingPage(
     navigateToRegistration: () -> Unit,
     navigateToExploreEvent: () -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToDetail: () -> Unit,
+    navigateToDetail: (String) -> Unit,  // Changed to accept eventId
     navigateToDashboard: () -> Unit,
     isLoggedIn: Boolean
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    // Firestore dan state event
+    val db = Firebase.firestore
+    var events by remember { mutableStateOf<List<Event>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
+    // Fetch events from Firestore on launch
+    LaunchedEffect(Unit) {
+        isLoading = true
+        try {
+            val snapshot = db.collection("events").get().await()
+            events = snapshot.documents.map { doc ->
+                Event(
+                    id = doc.id,
+                    title = doc.getString("title") ?: "",
+                    description = doc.getString("description") ?: "",
+                    dateTime = doc.getString("dateTime") ?: "",
+                    location = doc.getString("location") ?: "",
+                    organizer = doc.getString("organizer") ?: "",
+                    platformLink = doc.getString("platformLink") ?: "",
+                    ticketCategory = doc.getString("ticketCategory") ?: "",
+                    imageUrl = doc.getString("imageUrl") ?: "",
+                    userId = doc.getString("userId") ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            error = e.message ?: "Failed to load events"
+            android.widget.Toast.makeText(context, error, android.widget.Toast.LENGTH_SHORT).show()
+        } finally {
+            isLoading = false
+        }
+    }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -75,8 +87,7 @@ fun LandingPage(
             ModalDrawerSheet {
                 Text(
                     stringResource(R.string.app_name),
-                    modifier = Modifier
-                        .padding(16.dp),
+                    modifier = Modifier.padding(16.dp),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.tertiary
@@ -126,14 +137,24 @@ fun LandingPage(
             ) {
                 item { HeroSection(navigateToExploreEvent = navigateToExploreEvent) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
-                item { PopularEventSection(navigateToDetail = navigateToDetail) }
+                item {
+                    if (isLoading) {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    } else {
+                        PopularEventSection(
+                            events = events,
+                            navigateToDetail = navigateToDetail
+                        )
+                    }
+                }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
                 //item { CallToAction(navigateToRegistration = navigateToRegistration) }
             }
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -221,7 +242,10 @@ fun HeroSection(navigateToExploreEvent: () -> Unit) {
 }
 
 @Composable
-fun PopularEventSection(navigateToDetail: () -> Unit) {
+fun PopularEventSection(
+    events: List<Event>,
+    navigateToDetail: (String) -> Unit  // Accepts eventId
+) {
     Column(
         modifier = Modifier
             .padding(16.dp)
@@ -234,14 +258,22 @@ fun PopularEventSection(navigateToDetail: () -> Unit) {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(8.dp))
-        LazyRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = 260.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(5) {
-                EventCard(navigateToDetail = navigateToDetail)
+
+        if (events.isEmpty()) {
+            Text("No events available", modifier = Modifier.padding(16.dp))
+        } else {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 260.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                items(events) { event ->
+                    EventCard(
+                        event = event,
+                        navigateToDetail = { navigateToDetail(event.id) }  // Pass event.id
+                    )
+                }
             }
         }
     }

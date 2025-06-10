@@ -100,4 +100,6 @@
 
     <string name="admin_dashboard">Admin Dashboard</string>
 
+    <string name="all_events">Semua Event</string>
+    <string name="no_events_found">Tidak Ada Event Yang Ditemukan</string>
 </resources>

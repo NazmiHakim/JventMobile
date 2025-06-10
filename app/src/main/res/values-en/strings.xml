@@ -99,4 +99,7 @@
     <string name="logout">Logout</string>
 
     <string name="admin_dashboard">Admin Dashboard</string>
+
+    <string name="all_events">All Events</string>
+    <string name="no_events_found">No events found</string>
 </resources>

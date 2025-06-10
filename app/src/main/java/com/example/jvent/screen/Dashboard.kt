@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,31 +20,75 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventCard
-import com.example.jvent.R
+import com.example.jvent.model.Event
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.tasks.await
 
 @Composable
 fun Dashboard(
-    navigateToDetail: () -> Unit,
+    navigateToDetail: (String) -> Unit,
     navigateToMakeEvent: () -> Unit,
-    onLogout: () -> Unit) {
+    onLogout: () -> Unit
+) {
+    val db = Firebase.firestore
+    var events by remember { mutableStateOf<List<Event>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+    var error by remember { mutableStateOf<String?>(null) }
+    val context = LocalContext.current
+
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf(
         stringResource(R.string.active_event),
         stringResource(R.string.past_event)
     )
+
+    // Fetch events from Firestore
+    LaunchedEffect(Unit) {
+        isLoading = true
+        try {
+            val snapshot = db.collection("events")
+                .get()
+                .await()
+
+            events = snapshot.documents.map { doc ->
+                Event(
+                    id = doc.id,
+                    title = doc.getString("title") ?: "",
+                    description = doc.getString("description") ?: "",
+                    dateTime = doc.getString("dateTime") ?: "",
+                    location = doc.getString("location") ?: "",
+                    organizer = doc.getString("organizer") ?: "",
+                    platformLink = doc.getString("platformLink") ?: "",
+                    ticketCategory = doc.getString("ticketCategory") ?: "",
+                    imageUrl = doc.getString("imageUrl") ?: "",
+                    userId = doc.getString("userId") ?: ""
+                )
+            }
+        } catch (e: Exception) {
+            error = e.message ?: "Failed to load events"
+            android.widget.Toast.makeText(context, error, android.widget.Toast.LENGTH_SHORT).show()
+        } finally {
+            isLoading = false
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -97,8 +142,11 @@ fun Dashboard(
                         .heightIn(max = 260.dp),
                     horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    items(5) {
-                        EventCard(navigateToDetail = navigateToDetail)
+                    items(events) { event ->
+                        EventCard(
+                            event = event,
+                            navigateToDetail = { navigateToDetail(event.id) }
+                        )
                     }
                 }
             }
@@ -107,7 +155,7 @@ fun Dashboard(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = {navigateToMakeEvent()},
+                    onClick = { navigateToMakeEvent() },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {

@@ -77,8 +77,8 @@ fun JventApp(auth: FirebaseAuth) {
                     navigateToSettings = {
                         navigateWithLoading(isLoading, navController, "settings")
                     },
-                    navigateToDetail = {
-                        navigateWithLoading(isLoading, navController, "detail")
+                    navigateToDetail = { eventId ->
+                        navController.navigate("detail/$eventId")  // Pass eventId to route
                     },
                     navigateToDashboard = {
                         navigateWithLoading(isLoading, navController, "dashboard")
@@ -106,8 +106,9 @@ fun JventApp(auth: FirebaseAuth) {
             }
 
             composable("explore") {
-                ExploreEvent(navigateToDetail = {
-                    navigateWithLoading(isLoading, navController,"detail") })
+                ExploreEvent(navigateToDetail = { eventId ->
+                    navController.navigate("detail/$eventId")
+                })
             }
             composable("login") {
                 LoginScreen(
@@ -132,13 +133,12 @@ fun JventApp(auth: FirebaseAuth) {
             composable("dashboard") {
                 if (isUserLoggedIn.value) {
                     Dashboard(
-                        navigateToDetail = {
-                            navigateWithLoading(isLoading, navController, "detail")
+                        navigateToDetail = { eventId ->
+                            navController.navigate("detail/$eventId")
                         },
                         navigateToMakeEvent = {
                             navigateWithLoading(isLoading, navController, "make_event")
                         },
-                        // In MainActivity/JventApp
                         onLogout = {
                             AuthRepository.logout()
                             isUserLoggedIn.value = false
@@ -146,14 +146,14 @@ fun JventApp(auth: FirebaseAuth) {
                         }
                     )
                 } else {
-                    // Redirect to login if not authenticated
                     navController.navigate("login") {
                         popUpTo("dashboard") { inclusive = true }
                     }
                 }
             }
-            composable("detail") {
-                Detail()
+            composable("detail/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                Detail(eventId = eventId)
             }
         }
 
