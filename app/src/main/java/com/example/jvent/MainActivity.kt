@@ -155,7 +155,19 @@ fun JventApp(auth: FirebaseAuth) {
             }
             composable("detail/{eventId}") { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
-                Detail(eventId = eventId)
+                Detail(
+                    eventId = eventId,
+                    onEdit = {
+                        // For now, navigate to the dashboard as a placeholder for editing
+                        navController.navigate("dashboard") {
+                            popUpTo("landing")
+                        }
+                    },
+                    onDeleted = {
+                        // After deletion, navigate back to the previous screen
+                        navController.popBackStack()
+                    }
+                )
             }
         }
 

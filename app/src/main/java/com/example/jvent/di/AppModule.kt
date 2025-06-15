@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.jvent.local.EventDatabase
 import com.example.jvent.data.repository.EventRepositoryImpl
 import com.example.jvent.domain.repository.EventRepository
+import com.example.jvent.local.EventDao
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -28,6 +29,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideEventDao(db: EventDatabase): EventDao {
+        return db.dao
+    }
+
+    @Provides
+    @Singleton
     fun provideFirebaseFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }
@@ -35,8 +42,9 @@ object AppModule {
     @Provides
     @Singleton
     fun provideEventRepository(
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        eventDao: EventDao
     ): EventRepository {
-        return EventRepositoryImpl(firestore)
+        return EventRepositoryImpl(firestore, eventDao)
     }
 }

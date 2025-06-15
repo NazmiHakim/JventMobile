@@ -1,5 +1,6 @@
 package com.example.jvent.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,21 +8,24 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.ImgurApiClient
+import com.example.jvent.domain.use_case.AddEventUseCase
 import com.example.jvent.model.Event
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import javax.inject.Inject
 
-class EventViewModel : ViewModel() {
-    private val firestore = FirebaseFirestore.getInstance()
+@HiltViewModel
+class EventViewModel @Inject constructor(
+    private val addEventUseCase: AddEventUseCase
+) : ViewModel() {
     private val imgurApiService = ImgurApiClient.apiService
 
     var eventName by mutableStateOf("")
@@ -86,7 +90,7 @@ class EventViewModel : ViewModel() {
     }
 
     fun createEvent(
-        context: android.content.Context,
+        context: Context,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -125,10 +129,11 @@ class EventViewModel : ViewModel() {
                     ticketCategory = ticketCategory,
                     imageUrl = imageUrl,
                     eventType = eventType, // + Tambahkan
-                    price = if (eventType == "Gratis") "Gratis" else price // + Tambahkan
+                    price = if (eventType == "Gratis") "Gratis" else price, // + Tambahkan
+                    userId = FirebaseAuth.getInstance().currentUser!!.uid
                 )
 
-                saveEventToFirestore(event)
+                addEventUseCase(event)
                 onSuccess()
             } catch (e: Exception) {
                 error = e.message ?: "Gagal membuat event"
@@ -144,7 +149,7 @@ class EventViewModel : ViewModel() {
         title: String,
         description: String,
         clientId: String,
-        context: android.content.Context
+        context: Context
     ): String {
         val inputStream = context.contentResolver.openInputStream(imageUri)
         val file = withContext(Dispatchers.IO) {
@@ -172,9 +177,5 @@ class EventViewModel : ViewModel() {
         } else {
             throw Exception(response.message() ?: "Failed to upload image to Imgur")
         }
-    }
-
-    private suspend fun saveEventToFirestore(event: Event) {
-        firestore.collection("events").add(event).await()
     }
 }

@@ -1,4 +1,4 @@
-package com.example.jvent.data.local
+package com.example.jvent.local
 
 import androidx.room.Dao
 import androidx.room.Insert

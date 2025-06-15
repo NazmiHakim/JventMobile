@@ -3,7 +3,7 @@ package com.example.jvent.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.domain.use_case.DeleteEventUseCase
-import com.example.jvent.domain.use_case.GetEventsUseCase
+import com.example.jvent.domain.use_case.GetEventByIdUseCase
 import com.example.jvent.model.Event
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    private val getEventUseCase: GetEventsUseCase,
+    private val getEventByIdUseCase: GetEventByIdUseCase,
     private val deleteEventUseCase: DeleteEventUseCase
 ) : ViewModel() {
 
@@ -22,7 +22,7 @@ class DetailViewModel @Inject constructor(
 
     fun loadEvent(eventId: String) {
         viewModelScope.launch {
-            _event.value = getEventUseCase(eventId)
+            _event.value = getEventByIdUseCase(eventId)
         }
     }
 
