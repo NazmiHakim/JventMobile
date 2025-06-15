@@ -2,11 +2,17 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
     namespace = "com.example.jvent"
     compileSdk = 35
+
+    kapt {
+        correctErrorTypes = true
+    }
 
     defaultConfig {
         applicationId = "com.example.jvent"
@@ -114,6 +120,17 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+
+    // Room for local database
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion") // For Coroutines support
+    kapt("androidx.room:room-compiler:$roomVersion")
+
+    // Hilt for Dependency Injection
+    val hiltVersion = "2.51.1"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
 
     // Testing
     testImplementation("junit:junit:4.13.2")
