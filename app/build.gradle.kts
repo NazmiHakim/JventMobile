@@ -121,6 +121,8 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
     // Room for local database
     val roomVersion = "2.6.1"
     implementation("androidx.room:room-runtime:$roomVersion")

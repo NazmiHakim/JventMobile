@@ -3,7 +3,9 @@ package com.example.jvent.screen
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,10 +22,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -32,48 +32,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
-import com.example.jvent.model.Event
-import com.google.firebase.firestore.ktx.firestore
+import com.example.jvent.viewmodel.DetailViewModel
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.tasks.await
 
 @Composable
-fun Detail(eventId: String) {
-    val db = Firebase.firestore
-    var event by remember { mutableStateOf<Event?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
+fun Detail(
+    eventId: String,
+    viewModel: DetailViewModel = hiltViewModel(),
+    onEdit: (String) -> Unit,
+    onDeleted: () -> Unit
+) {
     val context = LocalContext.current
+    val event by viewModel.event.collectAsState()
+    val currentUser = Firebase.auth.currentUser
 
     LaunchedEffect(eventId) {
-        isLoading = true
-        try {
-            val snapshot = db.collection("events")
-                .document(eventId)
-                .get()
-                .await()
-
-            event = Event(
-                id = snapshot.id,
-                title = snapshot.getString("title") ?: "",
-                description = snapshot.getString("description") ?: "",
-                dateTime = snapshot.getString("dateTime") ?: "",
-                location = snapshot.getString("location") ?: "",
-                organizer = snapshot.getString("organizer") ?: "",
-                platformLink = snapshot.getString("platformLink") ?: "",
-                ticketCategory = snapshot.getString("ticketCategory") ?: "",
-                imageUrl = snapshot.getString("imageUrl") ?: "",
-                userId = snapshot.getString("userId") ?: ""
-            )
-        } catch (e: Exception) {
-            error = e.message ?: "Gagal memuat data"
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        } finally {
-            isLoading = false
-        }
+        viewModel.loadEvent(eventId)
     }
 
     Scaffold(
@@ -185,6 +164,29 @@ fun Detail(eventId: String) {
                         .clip(RoundedCornerShape(12.dp))
                 )
                 Spacer(modifier = Modifier.height(24.dp))
+
+                // Show Edit and Delete buttons only to the event creator
+                if (currentUser != null && currentUser.uid == evt.userId) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Button(onClick = { onEdit(evt.id) }) {
+                            Text("Edit")
+                        }
+                        Button(
+                            onClick = {
+                                viewModel.deleteEvent(evt.id)
+                                Toast.makeText(context, "Event deleted", Toast.LENGTH_SHORT).show()
+                                onDeleted()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text("Delete")
+                        }
+                    }
+                }
             }
         }
     }
