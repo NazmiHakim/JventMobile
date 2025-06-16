@@ -17,6 +17,7 @@ import com.example.jvent.repository.AuthRepository
 import com.example.jvent.screen.AppSplashScreen
 import com.example.jvent.screen.Dashboard
 import com.example.jvent.screen.Detail
+import com.example.jvent.screen.EditEvent
 import com.example.jvent.screen.ExploreEvent
 import com.example.jvent.screen.LandingPage
 import com.example.jvent.screen.LoginScreen
@@ -27,7 +28,9 @@ import com.example.jvent.ui.theme.JventTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
 
@@ -120,14 +123,15 @@ fun JventApp(auth: FirebaseAuth) {
                         }
                     },
                     navigateToRegistration = {
-                        navigateWithLoading(isLoading, navController, "registration") // ✅ tambahkan ini
+                        navigateWithLoading(isLoading, navController, "registration")
                     }
                 )
             }
             composable("make_event") {
                 MakeEvent(
                     navigateToDashboard = {
-                        navigateWithLoading(isLoading, navController,"dashboard") }
+                        navigateWithLoading(isLoading, navController, "dashboard")
+                    }
                 )
             }
             composable("dashboard") {
@@ -153,10 +157,34 @@ fun JventApp(auth: FirebaseAuth) {
             }
             composable("detail/{eventId}") { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
-                Detail(eventId = eventId)
+                Detail(
+                    eventId = eventId,
+                    onEdit = { passedEventId ->
+                        // Navigate to the new EditEvent screen
+                        navController.navigate("edit_event/$passedEventId")
+                    },
+                    onDeleted = {
+                        // After deletion, navigate back to the previous screen
+                        navController.popBackStack()
+                    }
+                )
+            }
+
+            composable("edit_event/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                EditEvent(
+                    eventId = eventId,
+                    navigateToDashboard = {
+                        navController.navigate("dashboard") {
+                            // Correctly pop the back stack up to the dashboard
+                            popUpTo("dashboard") {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
+                NavigateWithLoading(isLoading.value)
             }
         }
-
-        NavigateWithLoading(isLoading.value)
     }
 }
