@@ -38,10 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.model.Event
+import com.example.jvent.viewmodel.EventListViewModel
 import com.example.jvent.viewmodel.EventViewModel
+import com.example.jvent.viewmodel.EventViewModelFactory
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -62,6 +65,11 @@ fun Detail(
     val context = LocalContext.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+
+    // Get an instance of the ViewModel that can refresh our event list
+    val eventListViewModel: EventListViewModel = viewModel(
+        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
+    )
 
     LaunchedEffect(eventId) {
         isLoading = true
@@ -93,6 +101,8 @@ fun Detail(
                             eventId = eventId,
                             onSuccess = {
                                 Toast.makeText(context, "Event berhasil dihapus", Toast.LENGTH_SHORT).show()
+                                // Tell the list to refresh from Firestore
+                                eventListViewModel.refreshEvents()
                                 showDeleteDialog = false
                                 onEventDeleted()
                             },

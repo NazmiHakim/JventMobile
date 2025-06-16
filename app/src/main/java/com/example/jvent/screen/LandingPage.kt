@@ -26,14 +26,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.EventCard
 import com.example.jvent.model.Event
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.example.jvent.viewmodel.EventListViewModel
+import com.example.jvent.viewmodel.EventViewModelFactory
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun LandingPage(
@@ -46,42 +47,16 @@ fun LandingPage(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    // Firestore dan state event
-    val db = Firebase.firestore
-    var events by remember { mutableStateOf<List<Event>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
-    // Fetch events from Firestore on launch
-    LaunchedEffect(Unit) {
-        isLoading = true
-        try {
-            val snapshot = db.collection("events").get().await()
-            events = snapshot.documents.map { doc ->
-                Event(
-                    id = doc.id,
-                    title = doc.getString("title") ?: "",
-                    description = doc.getString("description") ?: "",
-                    dateTime = doc.getString("dateTime") ?: "",
-                    location = doc.getString("location") ?: "",
-                    organizer = doc.getString("organizer") ?: "",
-                    platformLink = doc.getString("platformLink") ?: "",
-                    ticketCategory = doc.getString("ticketCategory") ?: "",
-                    imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: "",
-                    eventType = doc.getString("eventType") ?: "Gratis",
-                    price = doc.getString("price") ?: ""
-                )
-            }
-        } catch (e: Exception) {
-            error = e.message ?: "Failed to load events"
-            android.widget.Toast.makeText(context, error, android.widget.Toast.LENGTH_SHORT).show()
-        } finally {
-            isLoading = false
-        }
-    }
+    // --- NEW LOGIC ---
+    // Get the ViewModel using the factory
+    val eventListViewModel: EventListViewModel = viewModel(
+        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
+    )
+    // Collect events from the ViewModel's Flow
+    val events by eventListViewModel.allEvents.collectAsState(initial = emptyList())
+    // --- END NEW LOGIC ---
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -140,19 +115,12 @@ fun LandingPage(
                 item { HeroSection(navigateToExploreEvent = navigateToExploreEvent) }
                 item { Spacer(modifier = Modifier.height(24.dp)) }
                 item {
-                    if (isLoading) {
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
-                        }
-                    } else {
-                        PopularEventSection(
-                            events = events,
-                            navigateToDetail = navigateToDetail
-                        )
-                    }
+                    PopularEventSection(
+                        events = events,
+                        navigateToDetail = navigateToDetail
+                    )
                 }
                 item { Spacer(modifier = Modifier.height(32.dp)) }
-                //item { CallToAction(navigateToRegistration = navigateToRegistration) }
             }
         }
     }
@@ -261,6 +229,7 @@ fun PopularEventSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (events.isEmpty()) {
+            // This can now show when the cache is empty
             Text("No events available", modifier = Modifier.padding(16.dp))
         } else {
             LazyRow(
@@ -277,28 +246,3 @@ fun PopularEventSection(
         }
     }
 }
-
-//@Composable
-//fun CallToAction(navigateToRegistration: () -> Unit) {
-    //Column(
-        //modifier = Modifier
-            //.fillMaxWidth()
-            //.background(MaterialTheme.colorScheme.background)
-            //.padding(24.dp),
-        //horizontalAlignment = Alignment.CenterHorizontally
-    //) {
-        //Text(
-            //(R.string.call_to_action_1),
-            //color = MaterialTheme.colorScheme.onSurface,
-            //fontWeight = FontWeight.Bold,
-            //fontSize = 20.sp
-        //)
-        //Spacer(modifier = Modifier.height(12.dp))
-        //Button(
-            //onClick = navigateToRegistration,
-            //colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.onSecondaryContainer)
-        //) {
-            //Text(stringResource(R.string.call_to_action_button), color = MaterialTheme.colorScheme.onSurface)
-        //}
-    //}
-//}
