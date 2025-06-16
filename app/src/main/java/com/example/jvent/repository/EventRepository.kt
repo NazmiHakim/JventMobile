@@ -21,13 +21,8 @@ class EventRepository(private val eventDao: EventDao) {
         try {
             val snapshot = firestore.collection("events").get().await()
 
-            // This block correctly maps each document to an Event object including its ID
-            val events = snapshot.documents.mapNotNull { document ->
-                // Convert document to Event object
-                val event = document.toObject(Event::class.java)
-                // IMPORTANT: This line copies the event and inserts the document's ID
-                event?.copy(id = document.id)
-            }
+            // This block can now be simplified.
+            val events = snapshot.toObjects(Event::class.java)
 
             // Insert the corrected list into the database
             eventDao.insertAll(events)

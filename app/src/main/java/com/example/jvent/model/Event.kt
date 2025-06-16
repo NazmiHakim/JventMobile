@@ -2,6 +2,7 @@ package com.example.jvent.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.firebase.firestore.DocumentId // <-- IMPORT THIS
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
@@ -10,6 +11,7 @@ import java.util.Date
 data class Event(
     // Add @PrimaryKey annotation. Since Firestore generates the ID, it can't be null.
     @PrimaryKey
+    @DocumentId // <-- ADD THIS ANNOTATION
     val id: String = "",
     val title: String = "",
     val description: String = "",
