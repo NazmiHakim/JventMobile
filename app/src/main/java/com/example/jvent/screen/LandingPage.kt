@@ -40,7 +40,7 @@ fun LandingPage(
     navigateToRegistration: () -> Unit,
     navigateToExploreEvent: () -> Unit,
     navigateToSettings: () -> Unit,
-    navigateToDetail: (String) -> Unit,
+    navigateToDetail: (String) -> Unit,  // Changed to accept eventId
     navigateToDashboard: () -> Unit,
     isLoggedIn: Boolean
 ) {
@@ -70,9 +70,7 @@ fun LandingPage(
                     platformLink = doc.getString("platformLink") ?: "",
                     ticketCategory = doc.getString("ticketCategory") ?: "",
                     imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: "",
-                    eventType = doc.getString("eventType") ?: "Gratis",
-                    price = doc.getString("price") ?: ""
+                    userId = doc.getString("userId") ?: ""
                 )
             }
         } catch (e: Exception) {
@@ -246,12 +244,13 @@ fun HeroSection(navigateToExploreEvent: () -> Unit) {
 @Composable
 fun PopularEventSection(
     events: List<Event>,
-    navigateToDetail: (String) -> Unit
+    navigateToDetail: (String) -> Unit  // Accepts eventId
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .height(295.dp)
+            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .height(240.dp)
     ) {
         Text(
             stringResource(R.string.popular_event),
@@ -264,13 +263,15 @@ fun PopularEventSection(
             Text("No events available", modifier = Modifier.padding(16.dp))
         } else {
             LazyRow(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 260.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(events) { event ->
                     EventCard(
                         event = event,
-                        navigateToDetail = { navigateToDetail(event.id) }
+                        navigateToDetail = { navigateToDetail(event.id) }  // Pass event.id
                     )
                 }
             }

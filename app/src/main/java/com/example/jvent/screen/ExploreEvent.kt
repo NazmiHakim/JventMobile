@@ -1,8 +1,10 @@
 package com.example.jvent.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
@@ -11,12 +13,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -37,12 +43,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.example.jvent.R
-import com.example.jvent.components.EventCard
 import com.example.jvent.model.Event
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
@@ -51,7 +60,7 @@ import kotlinx.coroutines.tasks.await
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ExploreEvent(
-    navigateToDetail: (String) -> Unit
+    navigateToDetail: (String) -> Unit  // Changed to accept eventId
 ) {
     val db = Firebase.firestore
     var events by remember { mutableStateOf<List<Event>>(emptyList()) }
@@ -85,9 +94,7 @@ fun ExploreEvent(
                     platformLink = doc.getString("platformLink") ?: "",
                     ticketCategory = doc.getString("ticketCategory") ?: "",
                     imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: "",
-                    eventType = doc.getString("eventType") ?: "Gratis",
-                    price = doc.getString("price") ?: ""
+                    userId = doc.getString("userId") ?: ""
                 )
             }
         } catch (e: Exception) {
@@ -143,10 +150,7 @@ fun ExploreEvent(
 
             if (isLoading) {
                 item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
@@ -162,12 +166,9 @@ fun ExploreEvent(
                 }
             } else {
                 item {
-                    LazyRow(
-                        modifier = Modifier.height(260.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(events) { event ->
-                            EventCard(
+                            ExploreEventCard(
                                 event = event,
                                 navigateToDetail = { navigateToDetail(event.id) }
                             )
@@ -210,6 +211,63 @@ fun ExploreEvent(
     }
 }
 
+@Composable
+fun ExploreEventCard(
+    event: Event,
+    navigateToDetail: () -> Unit = {}
+) {
+    Card(
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondary),
+        modifier = Modifier
+            .width(220.dp)
+            .height(270.dp),
+        shape = RoundedCornerShape(12.dp),
+        onClick = navigateToDetail
+    ) {
+        Box {
+            Image(
+                painter = rememberAsyncImagePainter(event.imageUrl),
+                contentDescription = stringResource(R.string.event_image),
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+            )
+            Icon(
+                imageVector = Icons.Default.Favorite,
+                contentDescription = stringResource(R.string.favorite),
+                tint = MaterialTheme.colorScheme.surfaceContainer,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
+            )
+        }
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = event.title,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1
+            )
+            Text(
+                text = event.dateTime,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = event.price,
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = event.organizer,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
 @Composable
 fun FilterChip(
     text: String,
