@@ -17,6 +17,7 @@ import com.example.jvent.repository.AuthRepository
 import com.example.jvent.screen.AppSplashScreen
 import com.example.jvent.screen.Dashboard
 import com.example.jvent.screen.Detail
+import com.example.jvent.screen.EditEvent
 import com.example.jvent.screen.ExploreEvent
 import com.example.jvent.screen.LandingPage
 import com.example.jvent.screen.LoginScreen
@@ -153,7 +154,28 @@ fun JventApp(auth: FirebaseAuth) {
             }
             composable("detail/{eventId}") { backStackEntry ->
                 val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
-                Detail(eventId = eventId)
+                Detail(
+                    eventId = eventId,
+                    navigateToEdit = {
+                        navController.navigate("edit_event/$eventId")
+                    },
+                    onEventDeleted = {
+                        navController.navigate("dashboard") {
+                            popUpTo("dashboard") { inclusive = true }
+                        }
+                    }
+                )
+            }
+            composable("edit_event/{eventId}") { backStackEntry ->
+                val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                EditEvent(
+                    eventId = eventId,
+                    navigateToDashboard = {
+                        navController.navigate("dashboard") {
+                            popUpTo("dashboard") { inclusive = true }
+                        }
+                    }
+                )
             }
         }
 
