@@ -1,12 +1,22 @@
 package com.example.jvent.viewmodel
 
+import android.Manifest
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.ImgurApiClient
+import com.example.jvent.MainActivity
+import com.example.jvent.R
 import com.example.jvent.model.Event
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -126,7 +136,7 @@ class EventViewModel : ViewModel() {
     }
 
     fun createEvent(
-        context: android.content.Context,
+        context: Context,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
@@ -169,6 +179,7 @@ class EventViewModel : ViewModel() {
                 )
 
                 saveEventToFirestore(event)
+                sendNewEventNotification(context) // <-- PANGGIL FUNGSI NOTIFIKASI DI SINI
                 onSuccess()
             } catch (e: Exception) {
                 error = e.message ?: "Gagal membuat event"
@@ -179,8 +190,35 @@ class EventViewModel : ViewModel() {
         }
     }
 
+    private fun sendNewEventNotification(context: Context) {
+        // Create an explicit intent for an Activity in your app
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(context, "NEW_EVENT_CHANNEL_ID")
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Ganti dengan ikon notifikasi yang sesuai
+            .setContentTitle("Ada event baru nih!")
+            .setContentText("cek sekarang yuk!")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+
+        with(NotificationManagerCompat.from(context)) {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // notificationId is a unique int for each notification that you must define
+                notify(System.currentTimeMillis().toInt(), builder.build())
+            }
+        }
+    }
+
     fun updateEvent(
-        context: android.content.Context,
+        context: Context,
         eventId: String,
         onSuccess: () -> Unit,
         onError: (String) -> Unit
@@ -260,7 +298,7 @@ class EventViewModel : ViewModel() {
         title: String,
         description: String,
         clientId: String,
-        context: android.content.Context
+        context: Context
     ): String {
         val inputStream = context.contentResolver.openInputStream(imageUri)
         val file = withContext(Dispatchers.IO) {
