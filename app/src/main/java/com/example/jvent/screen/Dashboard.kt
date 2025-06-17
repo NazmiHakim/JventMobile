@@ -20,11 +20,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -34,13 +33,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventCard
-import com.example.jvent.model.Event
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.tasks.await
+import com.example.jvent.viewmodel.EventListViewModel
+import com.example.jvent.viewmodel.EventViewModelFactory
 
 @Composable
 fun Dashboard(
@@ -48,11 +47,11 @@ fun Dashboard(
     navigateToMakeEvent: () -> Unit,
     onLogout: () -> Unit
 ) {
-    val db = Firebase.firestore
-    var events by remember { mutableStateOf<List<Event>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
+    val eventListViewModel: EventListViewModel = viewModel(
+        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
+    )
+    val events by eventListViewModel.allEvents.collectAsState(initial = emptyList())
 
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf(
@@ -60,38 +59,8 @@ fun Dashboard(
         stringResource(R.string.past_event)
     )
 
-    // Fetch events from Firestore
-    LaunchedEffect(Unit) {
-        isLoading = true
-        try {
-            val snapshot = db.collection("events")
-                .get()
-                .await()
-
-            events = snapshot.documents.map { doc ->
-                Event(
-                    id = doc.id,
-                    title = doc.getString("title") ?: "",
-                    description = doc.getString("description") ?: "",
-                    dateTime = doc.getString("dateTime") ?: "",
-                    location = doc.getString("location") ?: "",
-                    organizer = doc.getString("organizer") ?: "",
-                    platformLink = doc.getString("platformLink") ?: "",
-                    ticketCategory = doc.getString("ticketCategory") ?: "",
-                    imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: "",
-                    // + Tambahkan field baru saat mapping
-                    eventType = doc.getString("eventType") ?: "Gratis",
-                    price = doc.getString("price") ?: ""
-                )
-            }
-        } catch (e: Exception) {
-            error = e.message ?: "Failed to load events"
-            android.widget.Toast.makeText(context, error, android.widget.Toast.LENGTH_SHORT).show()
-        } finally {
-            isLoading = false
-        }
-    }
+    // The LaunchedEffect for fetching data is no longer needed.
+    // The UI will automatically update when 'events' changes.
 
     Scaffold(
         topBar = {

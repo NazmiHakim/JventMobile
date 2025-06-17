@@ -2,26 +2,15 @@ package com.example.jvent.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.example.jvent.repository.EventRepository
-import kotlinx.coroutines.launch
 
-class EventListViewModel(private val repository: EventRepository) : ViewModel() {
+class EventListViewModel(repository: EventRepository) : ViewModel() {
 
     // Expose the Flow of events from the repository
     val allEvents = repository.allEvents
 
-    init {
-        // Initial refresh when the ViewModel is created
-        refreshEvents()
-    }
-
-    // Make this function public (remove 'private')
-    fun refreshEvents() {
-        viewModelScope.launch {
-            repository.refreshEvents()
-        }
-    }
+    // The init block and refreshEvents function are no longer needed
+    // as the repository now handles real-time updates automatically.
 }
 
 // Factory to create EventListViewModel with the repository (remains the same)

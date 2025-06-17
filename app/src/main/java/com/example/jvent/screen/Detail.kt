@@ -3,10 +3,10 @@ package com.example.jvent.screen
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,7 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,17 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.model.Event
-import com.example.jvent.viewmodel.EventListViewModel
 import com.example.jvent.viewmodel.EventViewModel
-import com.example.jvent.viewmodel.EventViewModelFactory
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.tasks.await
 
 @Composable
 fun Detail(
@@ -60,32 +56,33 @@ fun Detail(
     val auth = Firebase.auth
     val viewModel: EventViewModel = viewModel()
     var event by remember { mutableStateOf<Event?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
+    var isLoading by remember { mutableStateOf(true) } // Start as loading
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // Get an instance of the ViewModel that can refresh our event list
-    val eventListViewModel: EventListViewModel = viewModel(
-        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
-    )
-
-    LaunchedEffect(eventId) {
+    // Use DisposableEffect to listen for real-time updates
+    DisposableEffect(eventId) {
         isLoading = true
-        try {
-            val snapshot = db.collection("events")
-                .document(eventId)
-                .get()
-                .await()
+        val listener = db.collection("events").document(eventId)
+            .addSnapshotListener { snapshot, e ->
+                isLoading = false // Stop loading once we get a result
+                if (e != null) {
+                    error = "Gagal memuat data: ${e.message}"
+                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                    return@addSnapshotListener
+                }
 
-            event = snapshot.toObject(Event::class.java)?.copy(id = snapshot.id)
-
-        } catch (e: Exception) {
-            error = e.message ?: "Gagal memuat data"
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        } finally {
-            isLoading = false
+                if (snapshot != null && snapshot.exists()) {
+                    event = snapshot.toObject(Event::class.java)?.copy(id = snapshot.id)
+                } else {
+                    error = "Event tidak ditemukan."
+                }
+            }
+        // When the effect leaves the Composition, remove the listener
+        onDispose {
+            listener.remove()
         }
     }
 
@@ -101,8 +98,7 @@ fun Detail(
                             eventId = eventId,
                             onSuccess = {
                                 Toast.makeText(context, "Event berhasil dihapus", Toast.LENGTH_SHORT).show()
-                                // Tell the list to refresh from Firestore
-                                eventListViewModel.refreshEvents()
+                                // The list will update automatically via the Firestore listener.
                                 showDeleteDialog = false
                                 onEventDeleted()
                             },

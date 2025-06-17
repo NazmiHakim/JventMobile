@@ -1,6 +1,5 @@
 package com.example.jvent.screen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -29,7 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,62 +40,36 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.EventCard
-import com.example.jvent.model.Event
-import com.google.firebase.Firebase
-import com.google.firebase.firestore.firestore
-import kotlinx.coroutines.tasks.await
+import com.example.jvent.viewmodel.EventListViewModel
+import com.example.jvent.viewmodel.EventViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun ExploreEvent(
     navigateToDetail: (String) -> Unit
 ) {
-    val db = Firebase.firestore
-    var events by remember { mutableStateOf<List<Event>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var error by remember { mutableStateOf<String?>(null) }
-    var searchQuery by rememberSaveable { mutableStateOf("") }
     val context = LocalContext.current
+    val eventListViewModel: EventListViewModel = viewModel(
+        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
+    )
+    val allEvents by eventListViewModel.allEvents.collectAsState(initial = emptyList())
+    var searchQuery by rememberSaveable { mutableStateOf("") }
 
-    // Fetch events from Firestore
-    LaunchedEffect(searchQuery) {
-        isLoading = true
-        try {
-            val query = if (searchQuery.isNotEmpty()) {
-                db.collection("events")
-                    .orderBy("title")
-                    .startAt(searchQuery)
-                    .endAt(searchQuery + "\uf8ff")
-            } else {
-                db.collection("events")
+    val events = remember(allEvents, searchQuery) {
+        if (searchQuery.isBlank()) {
+            allEvents
+        } else {
+            allEvents.filter {
+                it.title.contains(searchQuery, ignoreCase = true)
             }
-
-            val snapshot = query.get().await()
-            events = snapshot.documents.map { doc ->
-                Event(
-                    id = doc.id,
-                    title = doc.getString("title") ?: "",
-                    description = doc.getString("description") ?: "",
-                    dateTime = doc.getString("dateTime") ?: "",
-                    location = doc.getString("location") ?: "",
-                    organizer = doc.getString("organizer") ?: "",
-                    platformLink = doc.getString("platformLink") ?: "",
-                    ticketCategory = doc.getString("ticketCategory") ?: "",
-                    imageUrl = doc.getString("imageUrl") ?: "",
-                    userId = doc.getString("userId") ?: "",
-                    eventType = doc.getString("eventType") ?: "Gratis",
-                    price = doc.getString("price") ?: ""
-                )
-            }
-        } catch (e: Exception) {
-            error = e.message ?: "Failed to load events"
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        } finally {
-            isLoading = false
         }
     }
+
+    val isLoading = false // No longer fetched directly, so loading state is simpler.
 
     Scaffold(
         topBar = {
