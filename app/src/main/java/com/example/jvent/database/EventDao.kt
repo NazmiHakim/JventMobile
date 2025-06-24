@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction // <-- Tambahkan import ini
 import com.example.jvent.model.Event
 import kotlinx.coroutines.flow.Flow
 
@@ -20,4 +21,11 @@ interface EventDao {
     // Deletes all events from the table
     @Query("DELETE FROM events")
     suspend fun deleteAll()
+
+    // Fungsi baru untuk membersihkan dan menyisipkan dalam satu transaksi
+    @Transaction
+    suspend fun refreshEvents(events: List<Event>) {
+        deleteAll()
+        insertAll(events)
+    }
 }

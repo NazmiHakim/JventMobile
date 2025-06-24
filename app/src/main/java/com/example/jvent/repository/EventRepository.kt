@@ -29,7 +29,8 @@ class EventRepository(private val eventDao: EventDao) {
             if (snapshots != null) {
                 val events = snapshots.toObjects(Event::class.java)
                 CoroutineScope(Dispatchers.IO).launch {
-                    eventDao.insertAll(events)
+                    // Gunakan fungsi refreshEvents untuk memastikan sinkronisasi
+                    eventDao.refreshEvents(events)
                     Log.d("EventRepository", "Events refreshed from Firestore and cached in Room.")
                 }
             }
