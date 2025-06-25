@@ -1,5 +1,7 @@
 package com.example.jvent.screen
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -21,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,8 +32,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,6 +55,7 @@ import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventTextField
 import com.example.jvent.viewmodel.EventViewModel
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class) // Diperlukan untuk ExposedDropdownMenuBox
 @Composable
@@ -58,6 +64,7 @@ fun MakeEvent(
 ) {
     val viewModel: EventViewModel = viewModel()
     val context = LocalContext.current
+    val calendar = Calendar.getInstance()
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -74,6 +81,28 @@ fun MakeEvent(
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
         }
     }
+
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            viewModel.dateTime += " ${String.format("%02d:%02d", hourOfDay, minute)}"
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true
+    )
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            viewModel.dateTime = "$dayOfMonth/${month + 1}/$year"
+            timePickerDialog.show()
+        },
+        calendar.get(Calendar.YEAR),
+        calendar.get(Calendar.MONTH),
+        calendar.get(Calendar.DAY_OF_MONTH)
+    )
+
 
     Scaffold(
         topBar = {
@@ -124,7 +153,6 @@ fun MakeEvent(
                     onValueChange = { viewModel.eventName = it }
                 )
             }
-            // * Ubah "Contact Person" menjadi "Penyelenggara Event"
             item {
                 EventTextField(
                     label = "Penyelenggara Event", // Langsung ganti atau gunakan string resource baru
@@ -133,10 +161,25 @@ fun MakeEvent(
                 )
             }
             item {
-                EventTextField(
-                    label = stringResource(id = R.string.date_time),
+                OutlinedTextField(
                     value = viewModel.dateTime,
-                    onValueChange = { viewModel.dateTime = it }
+                    onValueChange = { viewModel.dateTime = it },
+                    label = { Text(stringResource(id = R.string.date_time)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { datePickerDialog.show() },
+                    enabled = false, // Agar keyboard tidak muncul
+                    trailingIcon = {
+                        Icon(Icons.Default.DateRange, contentDescription = "Select Date")
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
             }
             item {
@@ -203,13 +246,6 @@ fun MakeEvent(
                     onValueChange = { viewModel.platformLink = it }
                 )
             }
-            item {
-                EventTextField(
-                    label = stringResource(id = R.string.ticket_category),
-                    value = viewModel.ticketCategory,
-                    onValueChange = { viewModel.ticketCategory = it }
-                )
-            }
 
             item {
                 OutlinedTextField(
@@ -233,8 +269,7 @@ fun MakeEvent(
                                 viewModel.resetForm()
                             },
                             onError = {
-                                // Toast sudah ditangani oleh LaunchedEffect, tapi bisa juga ditambahkan di sini jika perlu
-                                // Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
+                                // Toast sudah ditangani oleh LaunchedEffect
                             }
                         )
                     },

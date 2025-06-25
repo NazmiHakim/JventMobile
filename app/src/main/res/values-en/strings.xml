@@ -51,9 +51,6 @@
     <string name="date_time">Date and Time</string>
     <string name="location">Location</string>
     <string name="contact_person">Contact Person</string>
-    <string name="platform_link">Event Platform Link</string>
-    <string name="description">Event Description</string>
-    <string name="create_event_now">Create Event Now</string>
 
     <!-- explore event -->
     <string name="search_placeholder">Search events here</string>
@@ -102,4 +99,8 @@
 
     <string name="all_events">All Events</string>
     <string name="no_events_found">No events found</string>
+
+    <string name="platform_link">Ticket Purchase Platform Link</string>
+    <string name="description">Event Description</string>
+    <string name="create_event_now">Create Event Now</string>
 </resources>

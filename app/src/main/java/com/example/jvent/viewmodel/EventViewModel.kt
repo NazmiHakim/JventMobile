@@ -37,7 +37,6 @@ class EventViewModel : ViewModel() {
     private val imgurApiService = ImgurApiClient.apiService
 
     var eventName by mutableStateOf("")
-    var ticketCategory by mutableStateOf("")
     var dateTime by mutableStateOf("")
     var location by mutableStateOf("")
     var organizer by mutableStateOf("")
@@ -56,7 +55,6 @@ class EventViewModel : ViewModel() {
 
     fun resetForm() {
         eventName = ""
-        ticketCategory = ""
         dateTime = ""
         location = ""
         organizer = ""
@@ -119,7 +117,6 @@ class EventViewModel : ViewModel() {
                     location = event.location
                     organizer = event.organizer
                     platformLink = event.platformLink
-                    ticketCategory = event.ticketCategory
                     imageUrl = event.imageUrl // Store the original image URL
                     eventType = event.eventType
                     price = event.price
@@ -171,7 +168,6 @@ class EventViewModel : ViewModel() {
                     location = location,
                     organizer = organizer,
                     platformLink = platformLink,
-                    ticketCategory = ticketCategory,
                     imageUrl = imageUrl,
                     userId = currentUser.uid,
                     eventType = eventType,
@@ -252,7 +248,6 @@ class EventViewModel : ViewModel() {
                     "location" to location,
                     "organizer" to organizer,
                     "platformLink" to platformLink,
-                    "ticketCategory" to ticketCategory,
                     "imageUrl" to finalImageUrl,
                     "eventType" to eventType,
                     "price" to if (eventType == "Gratis") "Gratis" else price

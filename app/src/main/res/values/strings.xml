@@ -51,9 +51,6 @@
     <string name="date_time">Tanggal dan Waktu</string>
     <string name="location">Lokasi</string>
     <string name="contact_person">Narahubung</string>
-    <string name="platform_link">Lokasi Platform Event</string>
-    <string name="description">Deskripsi Event</string>
-    <string name="create_event_now">Buat Event Sekarang</string>
 
     //explore event
     <string name="search_placeholder">Cari event disini</string>
@@ -102,4 +99,8 @@
 
     <string name="all_events">Semua Event</string>
     <string name="no_events_found">Tidak Ada Event Yang Ditemukan</string>
+
+    <string name="platform_link">Link Menuju Platform Pembelian Tiket</string>
+    <string name="description">Deskripsi Event</string>
+    <string name="create_event_now">Buat Event Sekarang</string>
 </resources>

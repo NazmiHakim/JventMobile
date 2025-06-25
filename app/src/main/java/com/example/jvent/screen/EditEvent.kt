@@ -182,13 +182,6 @@ fun EditEvent(
                 )
             }
             item {
-                EventTextField(
-                    label = stringResource(id = R.string.ticket_category),
-                    value = viewModel.ticketCategory,
-                    onValueChange = { viewModel.ticketCategory = it }
-                )
-            }
-            item {
                 OutlinedTextField(
                     value = viewModel.description,
                     onValueChange = { viewModel.description = it },

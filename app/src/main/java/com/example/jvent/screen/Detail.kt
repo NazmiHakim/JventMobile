@@ -98,7 +98,6 @@ fun Detail(
                             eventId = eventId,
                             onSuccess = {
                                 Toast.makeText(context, "Event berhasil dihapus", Toast.LENGTH_SHORT).show()
-                                // The list will update automatically via the Firestore listener.
                                 showDeleteDialog = false
                                 onEventDeleted()
                             },
@@ -166,10 +165,6 @@ fun Detail(
                         )
                         Text(
                             text = evt.dateTime,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Text(
-                            text = evt.ticketCategory,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
