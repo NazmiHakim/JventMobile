@@ -67,18 +67,6 @@ fun Settings(
                     }
                 }
             }
-
-            item {
-                // Tombol untuk memaksa crash (HANYA UNTUK PENGUJIAN)
-                Button(
-                    onClick = {
-                        throw RuntimeException("Test Crash") // Baris ini akan menyebabkan crash
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text("Test Crash")
-                }
-            }
         }
     }
 }
