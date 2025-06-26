@@ -3,31 +3,12 @@ package com.example.jvent.screen
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -37,14 +18,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import coil.compose.rememberAsyncImagePainter
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.model.Event
 import com.example.jvent.viewmodel.EventViewModel
+import com.example.jvent.workers.NotificationWorker
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun Detail(
@@ -56,18 +44,18 @@ fun Detail(
     val auth = Firebase.auth
     val viewModel: EventViewModel = viewModel()
     var event by remember { mutableStateOf<Event?>(null) }
-    var isLoading by remember { mutableStateOf(true) } // Start as loading
+    var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     val context = LocalContext.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
+    var isReminded by remember { mutableStateOf(false) }
 
-    // Use DisposableEffect to listen for real-time updates
     DisposableEffect(eventId) {
         isLoading = true
         val listener = db.collection("events").document(eventId)
             .addSnapshotListener { snapshot, e ->
-                isLoading = false // Stop loading once we get a result
+                isLoading = false
                 if (e != null) {
                     error = "Gagal memuat data: ${e.message}"
                     Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
@@ -80,7 +68,6 @@ fun Detail(
                     error = "Event tidak ditemukan."
                 }
             }
-        // When the effect leaves the Composition, remove the listener
         onDispose {
             listener.remove()
         }
@@ -201,6 +188,61 @@ fun Detail(
                         }
 
                         Spacer(modifier = Modifier.height(6.dp))
+
+                        Button(
+                            onClick = {
+                                isReminded = true
+                                Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
+
+                                val eventDateStr = evt.dateTime
+                                val eventName = evt.title
+
+                                val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+                                val eventDate = try {
+                                    format.parse(eventDateStr)
+                                } catch (e: Exception) {
+                                    null
+                                }
+                                val currentTime = System.currentTimeMillis()
+
+                                if (eventDate != null) {
+                                    val timeDiff = eventDate.time - currentTime
+
+                                    val countdowns = listOf(
+                                        Triple(3, TimeUnit.DAYS, "3 hari"),
+                                        Triple(1, TimeUnit.DAYS, "1 hari"),
+                                        Triple(12, TimeUnit.HOURS, "12 jam"),
+                                        Triple(1, TimeUnit.HOURS, "1 jam"),
+                                        Triple(5, TimeUnit.MINUTES, "5 menit"),
+                                        Triple(1, TimeUnit.MINUTES, "1 menit")
+                                    )
+
+                                    for ((value, unit, countdownText) in countdowns) {
+                                        val delay = timeDiff - unit.toMillis(value.toLong())
+                                        if (delay > 0) {
+                                            val data = Data.Builder()
+                                                .putString("EVENT_NAME", eventName)
+                                                .putString("COUNTDOWN", countdownText)
+                                                .build()
+
+                                            val reminderWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                                                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                                                .setInputData(data)
+                                                .build()
+
+                                            WorkManager.getInstance(context).enqueue(reminderWorkRequest)
+                                        }
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = !isReminded,
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isReminded) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Text(text = if (isReminded) "Diingatkan" else "Ingatkan Saya")
+                        }
                     }
                 }
 

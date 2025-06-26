@@ -17,17 +17,25 @@ class JventApplication : Application() {
     }
 
     private fun createNotificationChannel() {
-        // Create the NotificationChannel, but only on API 26+ because
-        // the NotificationChannel class is not in the Support Library.
-        val name = "New Event"
-        val descriptionText = "Notifications for new events"
+        // Channel untuk event baru
+        val name = "Event Baru"
+        val descriptionText = "Notifikasi untuk event baru"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
         val channel = NotificationChannel("NEW_EVENT_CHANNEL_ID", name, importance).apply {
             description = descriptionText
         }
-        // Register the channel with the system
+
+        // Channel untuk pengingat
+        val reminderChannelName = "Pengingat Event"
+        val reminderChannelDesc = "Notifikasi untuk mengingatkan event yang akan datang"
+        val reminderChannelImportance = NotificationManager.IMPORTANCE_DEFAULT
+        val reminderChannel = NotificationChannel("REMINDER_CHANNEL_ID", reminderChannelName, reminderChannelImportance).apply {
+            description = reminderChannelDesc
+        }
+
         val notificationManager: NotificationManager =
             getSystemService(NotificationManager::class.java)
         notificationManager.createNotificationChannel(channel)
+        notificationManager.createNotificationChannel(reminderChannel)
     }
 }

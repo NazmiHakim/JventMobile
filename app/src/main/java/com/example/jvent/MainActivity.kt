@@ -82,7 +82,7 @@ fun JventApp(auth: FirebaseAuth) {
                         navController.navigate("detail/$eventId")  // Pass eventId to route
                     },
                     navigateToDashboard = {
-                        navigateWithLoading(isLoading, navController, "dashboard")
+                        navController.navigate("dashboard")
                     },
                     isLoggedIn = isUserLoggedIn.value
                 )
@@ -100,7 +100,8 @@ fun JventApp(auth: FirebaseAuth) {
                         AuthRepository.logout()
                         isUserLoggedIn.value = false
                         navController.navigate("landing") {
-                            popUpTo("dashboard") { inclusive = true }
+                            // Membersihkan semua backstack hingga ke root
+                            popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }
                 )
@@ -117,7 +118,7 @@ fun JventApp(auth: FirebaseAuth) {
                     onLoginSuccess = {
                         isUserLoggedIn.value = true
                         navController.navigate("dashboard") {
-                            popUpTo("login") { inclusive = true }
+                            popUpTo("landing") { inclusive = true }
                         }
                     },
                     navigateToRegistration = {
@@ -128,7 +129,12 @@ fun JventApp(auth: FirebaseAuth) {
             composable("make_event") {
                 MakeEvent(
                     navigateToDashboard = {
-                        navigateWithLoading(isLoading, navController,"dashboard") }
+                        navController.navigate("dashboard") {
+                            // Kembali ke dashboard, dan hapus semua yang ada di atas landing page
+                            // agar dashboard menjadi satu-satunya di atas landing
+                            popUpTo("landing") { inclusive = false }
+                        }
+                    }
                 )
             }
             composable("dashboard") {
@@ -143,7 +149,9 @@ fun JventApp(auth: FirebaseAuth) {
                         onLogout = {
                             AuthRepository.logout()
                             isUserLoggedIn.value = false
-                            navController.navigate("landing")
+                            navController.navigate("landing"){
+                                popUpTo("dashboard"){ inclusive = true }
+                            }
                         }
                     )
                 } else {
@@ -160,8 +168,9 @@ fun JventApp(auth: FirebaseAuth) {
                         navController.navigate("edit_event/$eventId")
                     },
                     onEventDeleted = {
+                        // Kembali ke dashboard setelah event dihapus
                         navController.navigate("dashboard") {
-                            popUpTo("dashboard") { inclusive = true }
+                            popUpTo("landing") { inclusive = false }
                         }
                     }
                 )
@@ -172,7 +181,8 @@ fun JventApp(auth: FirebaseAuth) {
                     eventId = eventId,
                     navigateToDashboard = {
                         navController.navigate("dashboard") {
-                            popUpTo("dashboard") { inclusive = true }
+                            // Kembali ke dashboard, dan hapus semua yang ada di atas landing page
+                            popUpTo("landing") { inclusive = false }
                         }
                     }
                 )
