@@ -18,6 +18,9 @@ import com.example.jvent.ImgurApiClient
 import com.example.jvent.MainActivity
 import com.example.jvent.R
 import com.example.jvent.model.Event
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
@@ -35,6 +38,8 @@ class EventViewModel : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = Firebase.auth
     private val imgurApiService = ImgurApiClient.apiService
+    // Deklarasikan Firebase Analytics
+    private lateinit var analytics: FirebaseAnalytics
 
     var eventName by mutableStateOf("")
     var dateTime by mutableStateOf("")
@@ -42,16 +47,18 @@ class EventViewModel : ViewModel() {
     var organizer by mutableStateOf("")
     var platformLink by mutableStateOf("")
     var description by mutableStateOf("")
-    var imageUrl by mutableStateOf<String?>(null) // Holds the existing image URL when editing
-    var imageUri by mutableStateOf<Uri?>(null) // Holds the new local image URI
+    var imageUrl by mutableStateOf<String?>(null)
+    var imageUri by mutableStateOf<Uri?>(null)
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
-
-    // + Tambahkan state untuk field baru
-    var eventType by mutableStateOf("Gratis") // Opsi: "Gratis" atau "Berbayar"
+    var eventType by mutableStateOf("Gratis")
     var price by mutableStateOf("")
+    private var eventUserId: String? = null
 
-    private var eventUserId: String? = null // To store the creator's ID
+    init {
+        // Inisialisasi Firebase Analytics
+        analytics = Firebase.analytics
+    }
 
     fun resetForm() {
         eventName = ""
@@ -63,14 +70,12 @@ class EventViewModel : ViewModel() {
         imageUri = null
         imageUrl = null
         eventUserId = null
-        // + Reset state baru
         eventType = "Gratis"
         price = ""
     }
 
-    // * Perbarui validasi
     private fun validateForm(isUpdate: Boolean = false): Boolean {
-        error = null // Reset error sebelum validasi
+        error = null
         return when {
             !isUpdate && imageUri == null -> {
                 error = "Poster/gambar event tidak boleh kosong"
@@ -117,7 +122,7 @@ class EventViewModel : ViewModel() {
                     location = event.location
                     organizer = event.organizer
                     platformLink = event.platformLink
-                    imageUrl = event.imageUrl // Store the original image URL
+                    imageUrl = event.imageUrl
                     eventType = event.eventType
                     price = event.price
                     eventUserId = event.userId
@@ -175,7 +180,15 @@ class EventViewModel : ViewModel() {
                 )
 
                 saveEventToFirestore(event)
-                sendNewEventNotification(context) // <-- PANGGIL FUNGSI NOTIFIKASI DI SINI
+
+                // Log event ke Firebase Analytics
+                analytics.logEvent("event_created") {
+                    param("event_name", eventName)
+                    param("event_type", eventType)
+                    param("event_location", location)
+                }
+
+                sendNewEventNotification(context)
                 onSuccess()
             } catch (e: Exception) {
                 error = e.message ?: "Gagal membuat event"
@@ -187,14 +200,13 @@ class EventViewModel : ViewModel() {
     }
 
     private fun sendNewEventNotification(context: Context) {
-        // Create an explicit intent for an Activity in your app
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
 
         val builder = NotificationCompat.Builder(context, "NEW_EVENT_CHANNEL_ID")
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Ganti dengan ikon notifikasi yang sesuai
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Ada event baru nih!")
             .setContentText("cek sekarang yuk!")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -207,7 +219,6 @@ class EventViewModel : ViewModel() {
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                // notificationId is a unique int for each notification that you must define
                 notify(System.currentTimeMillis().toInt(), builder.build())
             }
         }

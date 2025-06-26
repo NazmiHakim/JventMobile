@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application") version "8.2.2" apply false
-    id("org.jetbrains.kotlin.android") version "1.9.23" apply false   // Versi Kotlin resmi terbaru per Mei 2025
+    id("org.jetbrains.kotlin.android") version "1.9.23" apply false
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.android.library") version "8.2.2" apply false
     id("com.google.devtools.ksp") version "1.9.23-1.0.19" apply false
+    id("com.google.firebase.crashlytics") version "3.0.4" apply false
 }

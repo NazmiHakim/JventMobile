@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.example.jvent.database.EventDatabase
 import com.example.jvent.repository.EventRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class JventApplication : Application() {
     // Lazily initialize database and repository
@@ -14,6 +15,9 @@ class JventApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
+
+        // Contoh logging kustom dengan Crashlytics
+        FirebaseCrashlytics.getInstance().log("Aplikasi Jvent dimulai")
     }
 
     private fun createNotificationChannel() {

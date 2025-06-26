@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
+    // Terapkan plugin Firebase Crashlytics
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -90,9 +92,11 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
-    implementation("com.google.firebase:firebase-auth-ktx") // MASIH AMAN jika pakai BoM
+    implementation("com.google.firebase:firebase-auth-ktx")
+    // Tambahkan dependensi Firebase Crashlytics
+    implementation("com.google.firebase:firebase-crashlytics")
 
-    // FirebaseUI (pastikan hanya 1 versi)
+    // FirebaseUI
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
 
     // Facebook login
