@@ -1,5 +1,6 @@
 package com.example.jvent.screen
 
+import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -49,7 +50,71 @@ fun Detail(
     val context = LocalContext.current
 
     var showDeleteDialog by remember { mutableStateOf(false) }
-    var isReminded by remember { mutableStateOf(false) }
+
+    // --- PERUBAHAN DIMULAI DI SINI ---
+
+    // Menggunakan SharedPreferences untuk menyimpan status pengingat secara lokal
+    val sharedPrefs = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
+
+    // State untuk tombol pengingat, nilainya diambil dari SharedPreferences
+    var isReminded by remember(eventId) {
+        mutableStateOf(sharedPrefs.getBoolean(eventId, false))
+    }
+
+    // Fungsi untuk mengatur atau membatalkan pengingat
+    val workManager = WorkManager.getInstance(context)
+
+    fun setReminder(event: Event) {
+        val eventDateStr = event.dateTime
+        val eventName = event.title
+        val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val eventDate = try {
+            format.parse(eventDateStr)
+        } catch (e: Exception) {
+            null
+        }
+        val currentTime = System.currentTimeMillis()
+
+        if (eventDate != null) {
+            val timeDiff = eventDate.time - currentTime
+
+            // Daftar waktu mundur untuk notifikasi
+            val countdowns = listOf(
+                Triple(3, TimeUnit.DAYS, "3 hari"),
+                Triple(1, TimeUnit.DAYS, "1 hari"),
+                Triple(12, TimeUnit.HOURS, "12 jam"),
+                Triple(1, TimeUnit.HOURS, "1 jam"),
+                Triple(5, TimeUnit.MINUTES, "5 menit"),
+                Triple(1, TimeUnit.MINUTES, "1 menit")
+            )
+
+            for ((value, unit, countdownText) in countdowns) {
+                val delay = timeDiff - unit.toMillis(value.toLong())
+                if (delay > 0) {
+                    val data = Data.Builder()
+                        .putString("EVENT_NAME", eventName)
+                        .putString("COUNTDOWN", countdownText)
+                        .build()
+
+                    val reminderWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
+                        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+                        .setInputData(data)
+                        // Memberikan tag unik untuk setiap request agar bisa dibatalkan
+                        .addTag(eventId)
+                        .build()
+
+                    workManager.enqueue(reminderWorkRequest)
+                }
+            }
+        }
+    }
+
+    fun cancelReminder() {
+        // Membatalkan semua work request dengan tag yang sesuai dengan eventId
+        workManager.cancelAllWorkByTag(eventId)
+    }
+
+    // --- PERUBAHAN SELESAI DI SINI ---
 
     DisposableEffect(eventId) {
         isLoading = true
@@ -189,59 +254,34 @@ fun Detail(
 
                         Spacer(modifier = Modifier.height(6.dp))
 
+                        // --- Tombol Pengingat yang Diperbaiki ---
                         Button(
                             onClick = {
-                                isReminded = true
-                                Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
+                                val newState = !isReminded
+                                isReminded = newState
 
-                                val eventDateStr = evt.dateTime
-                                val eventName = evt.title
-
-                                val format = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-                                val eventDate = try {
-                                    format.parse(eventDateStr)
-                                } catch (e: Exception) {
-                                    null
+                                // Simpan state baru ke SharedPreferences
+                                with(sharedPrefs.edit()) {
+                                    putBoolean(eventId, newState)
+                                    apply()
                                 }
-                                val currentTime = System.currentTimeMillis()
 
-                                if (eventDate != null) {
-                                    val timeDiff = eventDate.time - currentTime
-
-                                    val countdowns = listOf(
-                                        Triple(3, TimeUnit.DAYS, "3 hari"),
-                                        Triple(1, TimeUnit.DAYS, "1 hari"),
-                                        Triple(12, TimeUnit.HOURS, "12 jam"),
-                                        Triple(1, TimeUnit.HOURS, "1 jam"),
-                                        Triple(5, TimeUnit.MINUTES, "5 menit"),
-                                        Triple(1, TimeUnit.MINUTES, "1 menit")
-                                    )
-
-                                    for ((value, unit, countdownText) in countdowns) {
-                                        val delay = timeDiff - unit.toMillis(value.toLong())
-                                        if (delay > 0) {
-                                            val data = Data.Builder()
-                                                .putString("EVENT_NAME", eventName)
-                                                .putString("COUNTDOWN", countdownText)
-                                                .build()
-
-                                            val reminderWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
-                                                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                                                .setInputData(data)
-                                                .build()
-
-                                            WorkManager.getInstance(context).enqueue(reminderWorkRequest)
-                                        }
-                                    }
+                                if (newState) {
+                                    // Jika tombol diaktifkan, set pengingat
+                                    setReminder(evt)
+                                    Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    // Jika tombol dinonaktifkan, batalkan pengingat
+                                    cancelReminder()
+                                    Toast.makeText(context, "Pengingat dibatalkan.", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            enabled = !isReminded,
                             colors = ButtonDefaults.buttonColors(
-                                containerColor = if (isReminded) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary
+                                containerColor = if (isReminded) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                             )
                         ) {
-                            Text(text = if (isReminded) "Diingatkan" else "Ingatkan Saya")
+                            Text(text = if (isReminded) "Batalkan Pengingat" else "Ingatkan Saya")
                         }
                     }
                 }
