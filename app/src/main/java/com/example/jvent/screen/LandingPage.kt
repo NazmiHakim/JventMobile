@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.Explore
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -54,7 +53,8 @@ fun LandingPage(
     val eventListViewModel: EventListViewModel = viewModel(
         factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
     )
-    val events by eventListViewModel.allEvents.collectAsState(initial = emptyList())
+    val events by eventListViewModel.filteredEvents.collectAsState()
+    val searchQuery by eventListViewModel.searchQuery.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -110,7 +110,11 @@ fun LandingPage(
     ) {
         Scaffold(
             topBar = {
-                AppBarLanding(onMenuClick = { scope.launch { drawerState.open() } })
+                AppBarLanding(
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = { eventListViewModel.onSearchQueryChange(it) },
+                    onMenuClick = { scope.launch { drawerState.open() } }
+                )
             }
         ) { innerPadding ->
             LazyColumn(
@@ -135,21 +139,23 @@ fun LandingPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBarLanding(onMenuClick: () -> Unit) {
-    var searchQuery by rememberSaveable { mutableStateOf("") }
-
+fun AppBarLanding(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    onMenuClick: () -> Unit
+) {
     TopAppBar(
         title = {
             OutlinedTextField(
                 value = searchQuery,
-                onValueChange = { searchQuery = it },
+                onValueChange = onSearchQueryChange,
                 leadingIcon = {
                     Icon(Icons.Default.Search, contentDescription = "Search")
                 },
                 placeholder = { Text(stringResource(R.string.search_event)) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(53.dp),
+                    .height(56.dp),
                 singleLine = true,
                 shape = RoundedCornerShape(24.dp)
             )

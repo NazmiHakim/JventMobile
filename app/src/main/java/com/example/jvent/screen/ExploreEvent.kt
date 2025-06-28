@@ -20,7 +20,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -30,10 +29,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -56,20 +51,10 @@ fun ExploreEvent(
     val eventListViewModel: EventListViewModel = viewModel(
         factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
     )
-    val allEvents by eventListViewModel.allEvents.collectAsState(initial = emptyList())
-    var searchQuery by rememberSaveable { mutableStateOf("") }
+    val events by eventListViewModel.filteredEvents.collectAsState()
+    val searchQuery by eventListViewModel.searchQuery.collectAsState()
 
-    val events = remember(allEvents, searchQuery) {
-        if (searchQuery.isBlank()) {
-            allEvents
-        } else {
-            allEvents.filter {
-                it.title.contains(searchQuery, ignoreCase = true)
-            }
-        }
-    }
-
-    val isLoading = false // No longer fetched directly, so loading state is simpler.
+    val isLoading = false
 
     Scaffold(
         topBar = {
@@ -77,17 +62,16 @@ fun ExploreEvent(
                 title = {
                     OutlinedTextField(
                         value = searchQuery,
-                        onValueChange = { searchQuery = it },
+                        onValueChange = { eventListViewModel.onSearchQueryChange(it) },
                         placeholder = { Text(stringResource(R.string.search_placeholder)) },
                         leadingIcon = {
                             Icon(Icons.Default.Search, contentDescription = stringResource(R.string.search_event))
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(48.dp),
+                            .height(58.dp),
                         singleLine = true,
-                        shape = RoundedCornerShape(24.dp),
-                        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
+                        shape = RoundedCornerShape(24.dp)
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

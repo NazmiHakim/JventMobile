@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,16 +50,14 @@ fun Dashboard(
     val eventListViewModel: EventListViewModel = viewModel(
         factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
     )
-    val events by eventListViewModel.allEvents.collectAsState(initial = emptyList())
+    val events by eventListViewModel.filteredEvents.collectAsState()
+    val searchQuery by eventListViewModel.searchQuery.collectAsState()
 
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
     val tabs = listOf(
         stringResource(R.string.active_event),
         stringResource(R.string.past_event)
     )
-
-    // The LaunchedEffect for fetching data is no longer needed.
-    // The UI will automatically update when 'events' changes.
 
     Scaffold(
         topBar = {
@@ -73,14 +70,11 @@ fun Dashboard(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // Search field dan tab
             item {
                 Column {
-                    var searchQuery by rememberSaveable { mutableStateOf("") }
-
                     OutlinedTextField(
                         value = searchQuery,
-                        onValueChange = { searchQuery = it },
+                        onValueChange = { eventListViewModel.onSearchQueryChange(it) },
                         placeholder = { Text(stringResource(R.string.search_event_here)) },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -106,7 +100,6 @@ fun Dashboard(
                 }
             }
 
-            // Event list horizontal
             item {
                 LazyRow(
                     modifier = Modifier
