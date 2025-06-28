@@ -1,7 +1,6 @@
 package com.example.jvent.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,8 +32,6 @@ import com.example.jvent.model.Event
 fun EventCard(
     event: Event,
     navigateToDetail: () -> Unit,
-    isFavorite: Boolean = false,
-    onFavoriteClick: () -> Unit = {}
 ) {
     Card(
         onClick = navigateToDetail,
@@ -53,15 +51,25 @@ fun EventCard(
                     .height(130.dp)
             )
 
-            Icon(
-                imageVector = Icons.Default.Favorite,
-                contentDescription = "Favorite",
-                tint = if (isFavorite) Color.Red else Color.White,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .clickable { onFavoriteClick() }
-            )
+            if (event.isFavorite) {
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = "Favorite",
+                    tint = Color.Red,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Default.FavoriteBorder,
+                    contentDescription = "Not Favorite",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                )
+            }
         }
         Column(modifier = Modifier.padding(12.dp)) {
             Text(
@@ -77,11 +85,10 @@ fun EventCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = if (event.eventType == "Gratis") "Gratis" else event.price, // Tampilkan harga atau gratis
+                text = if (event.eventType == "Gratis") "Gratis" else event.price,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
-            // + Tambahkan teks untuk penyelenggara
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "by: ${event.organizer}",

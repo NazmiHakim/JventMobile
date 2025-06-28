@@ -21,5 +21,6 @@ data class Event(
     val userId: String = "",
     val eventType: String = "Gratis",
     val price: String = "",
-    @ServerTimestamp val createdAt: Date? = null
+    @ServerTimestamp val createdAt: Date? = null,
+    var isFavorite: Boolean = false
 )

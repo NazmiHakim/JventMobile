@@ -17,6 +17,13 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
             started = SharingStarted.WhileSubscribed(5000L),
             initialValue = emptyList()
         )
+
+    val favoriteEvents: StateFlow<List<Event>> = repository.favoriteEvents
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = emptyList()
+        )
 }
 
 class EventViewModelFactory(private val repository: EventRepository) : ViewModelProvider.Factory {
@@ -24,6 +31,10 @@ class EventViewModelFactory(private val repository: EventRepository) : ViewModel
         if (modelClass.isAssignableFrom(EventListViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
             return EventListViewModel(repository) as T
+        }
+        if (modelClass.isAssignableFrom(EventViewModel::class.java)) {
+            @Suppress("UNCHECKED_CAST")
+            return EventViewModel(repository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -19,6 +19,7 @@ import com.example.jvent.screen.Dashboard
 import com.example.jvent.screen.Detail
 import com.example.jvent.screen.EditEvent
 import com.example.jvent.screen.ExploreEvent
+import com.example.jvent.screen.FavoritesScreen
 import com.example.jvent.screen.LandingPage
 import com.example.jvent.screen.LoginScreen
 import com.example.jvent.screen.MakeEvent
@@ -79,10 +80,13 @@ fun JventApp(auth: FirebaseAuth) {
                         navigateWithLoading(isLoading, navController, "settings")
                     },
                     navigateToDetail = { eventId ->
-                        navController.navigate("detail/$eventId")  // Pass eventId to route
+                        navController.navigate("detail/$eventId")
                     },
                     navigateToDashboard = {
                         navController.navigate("dashboard")
+                    },
+                    navigateToFavorites = {
+                        navController.navigate("favorites")
                     },
                     isLoggedIn = isUserLoggedIn.value
                 )
@@ -100,15 +104,18 @@ fun JventApp(auth: FirebaseAuth) {
                         AuthRepository.logout()
                         isUserLoggedIn.value = false
                         navController.navigate("landing") {
-                            // Membersihkan semua backstack hingga ke root
                             popUpTo(navController.graph.startDestinationId) { inclusive = true }
                         }
                     }
                 )
             }
-
             composable("explore") {
                 ExploreEvent(navigateToDetail = { eventId ->
+                    navController.navigate("detail/$eventId")
+                })
+            }
+            composable("favorites") {
+                FavoritesScreen(navigateToDetail = { eventId ->
                     navController.navigate("detail/$eventId")
                 })
             }
@@ -122,7 +129,7 @@ fun JventApp(auth: FirebaseAuth) {
                         }
                     },
                     navigateToRegistration = {
-                        navigateWithLoading(isLoading, navController, "registration") // ✅ tambahkan ini
+                        navigateWithLoading(isLoading, navController, "registration")
                     }
                 )
             }
@@ -130,8 +137,6 @@ fun JventApp(auth: FirebaseAuth) {
                 MakeEvent(
                     navigateToDashboard = {
                         navController.navigate("dashboard") {
-                            // Kembali ke dashboard, dan hapus semua yang ada di atas landing page
-                            // agar dashboard menjadi satu-satunya di atas landing
                             popUpTo("landing") { inclusive = false }
                         }
                     }
@@ -168,7 +173,6 @@ fun JventApp(auth: FirebaseAuth) {
                         navController.navigate("edit_event/$eventId")
                     },
                     onEventDeleted = {
-                        // Kembali ke dashboard setelah event dihapus
                         navController.navigate("dashboard") {
                             popUpTo("landing") { inclusive = false }
                         }
@@ -181,7 +185,6 @@ fun JventApp(auth: FirebaseAuth) {
                     eventId = eventId,
                     navigateToDashboard = {
                         navController.navigate("dashboard") {
-                            // Kembali ke dashboard, dan hapus semua yang ada di atas landing page
                             popUpTo("landing") { inclusive = false }
                         }
                     }

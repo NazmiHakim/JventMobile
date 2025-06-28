@@ -4,7 +4,8 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction // <-- Tambahkan import ini
+import androidx.room.Transaction
+import androidx.room.Update
 import com.example.jvent.model.Event
 import kotlinx.coroutines.flow.Flow
 
@@ -14,15 +15,20 @@ interface EventDao {
     @Query("SELECT * FROM events ORDER BY createdAt DESC")
     fun getAllEvents(): Flow<List<Event>>
 
+    @Query("SELECT * FROM events WHERE isFavorite = 1 ORDER BY createdAt DESC")
+    fun getFavoriteEvents(): Flow<List<Event>>
+
     // Inserts a list of events. Replaces on conflict.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(events: List<Event>)
+
+    @Update
+    suspend fun updateEvent(event: Event)
 
     // Deletes all events from the table
     @Query("DELETE FROM events")
     suspend fun deleteAll()
 
-    // Fungsi baru untuk membersihkan dan menyisipkan dalam satu transaksi
     @Transaction
     suspend fun refreshEvents(events: List<Event>) {
         deleteAll()

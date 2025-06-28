@@ -14,9 +14,14 @@ class EventRepository(private val eventDao: EventDao) {
     private val firestore = FirebaseFirestore.getInstance()
 
     val allEvents: Flow<List<Event>> = eventDao.getAllEvents()
+    val favoriteEvents: Flow<List<Event>> = eventDao.getFavoriteEvents()
 
     init {
         listenForEventUpdates()
+    }
+
+    suspend fun updateEvent(event: Event) {
+        eventDao.updateEvent(event)
     }
 
     private fun listenForEventUpdates() {
@@ -29,7 +34,6 @@ class EventRepository(private val eventDao: EventDao) {
             if (snapshots != null) {
                 val events = snapshots.toObjects(Event::class.java)
                 CoroutineScope(Dispatchers.IO).launch {
-                    // Gunakan fungsi refreshEvents untuk memastikan sinkronisasi
                     eventDao.refreshEvents(events)
                     Log.d("EventRepository", "Events refreshed from Firestore and cached in Room.")
                 }

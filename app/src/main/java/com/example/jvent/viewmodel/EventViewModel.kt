@@ -18,6 +18,7 @@ import com.example.jvent.ImgurApiClient
 import com.example.jvent.MainActivity
 import com.example.jvent.R
 import com.example.jvent.model.Event
+import com.example.jvent.repository.EventRepository
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.analytics.ktx.logEvent
@@ -34,11 +35,10 @@ import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 
-class EventViewModel : ViewModel() {
+class EventViewModel(private val repository: EventRepository? = null) : ViewModel() {
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = Firebase.auth
     private val imgurApiService = ImgurApiClient.apiService
-    // Deklarasikan Firebase Analytics
     private lateinit var analytics: FirebaseAnalytics
 
     var eventName by mutableStateOf("")
@@ -56,8 +56,13 @@ class EventViewModel : ViewModel() {
     private var eventUserId: String? = null
 
     init {
-        // Inisialisasi Firebase Analytics
         analytics = Firebase.analytics
+    }
+
+    fun toggleFavorite(event: Event) {
+        viewModelScope.launch {
+            repository?.updateEvent(event.copy(isFavorite = !event.isFavorite))
+        }
     }
 
     fun resetForm() {
@@ -181,7 +186,6 @@ class EventViewModel : ViewModel() {
 
                 saveEventToFirestore(event)
 
-                // Log event ke Firebase Analytics
                 analytics.logEvent("event_created") {
                     param("event_name", eventName)
                     param("event_type", eventType)

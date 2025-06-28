@@ -23,10 +23,12 @@ import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.JventApplication
 import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.model.Event
 import com.example.jvent.viewmodel.EventViewModel
+import com.example.jvent.viewmodel.EventViewModelFactory
 import com.example.jvent.workers.NotificationWorker
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
@@ -43,25 +45,23 @@ fun Detail(
 ) {
     val db = Firebase.firestore
     val auth = Firebase.auth
-    val viewModel: EventViewModel = viewModel()
+    val context = LocalContext.current
+    val viewModel: EventViewModel = viewModel(
+        factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
+    )
     var event by remember { mutableStateOf<Event?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
-    val context = LocalContext.current
+
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
-    // --- PERUBAHAN DIMULAI DI SINI ---
-
-    // Menggunakan SharedPreferences untuk menyimpan status pengingat secara lokal
     val sharedPrefs = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
 
-    // State untuk tombol pengingat, nilainya diambil dari SharedPreferences
     var isReminded by remember(eventId) {
         mutableStateOf(sharedPrefs.getBoolean(eventId, false))
     }
 
-    // Fungsi untuk mengatur atau membatalkan pengingat
     val workManager = WorkManager.getInstance(context)
 
     fun setReminder(event: Event) {
@@ -78,7 +78,6 @@ fun Detail(
         if (eventDate != null) {
             val timeDiff = eventDate.time - currentTime
 
-            // Daftar waktu mundur untuk notifikasi
             val countdowns = listOf(
                 Triple(3, TimeUnit.DAYS, "3 hari"),
                 Triple(1, TimeUnit.DAYS, "1 hari"),
@@ -99,7 +98,6 @@ fun Detail(
                     val reminderWorkRequest = OneTimeWorkRequestBuilder<NotificationWorker>()
                         .setInitialDelay(delay, TimeUnit.MILLISECONDS)
                         .setInputData(data)
-                        // Memberikan tag unik untuk setiap request agar bisa dibatalkan
                         .addTag(eventId)
                         .build()
 
@@ -110,11 +108,8 @@ fun Detail(
     }
 
     fun cancelReminder() {
-        // Membatalkan semua work request dengan tag yang sesuai dengan eventId
         workManager.cancelAllWorkByTag(eventId)
     }
-
-    // --- PERUBAHAN SELESAI DI SINI ---
 
     DisposableEffect(eventId) {
         isLoading = true
@@ -196,6 +191,20 @@ fun Detail(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                Text(
+                    text = stringResource(R.string.description),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    text = evt.description
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+
                 Card(
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth(),
@@ -254,24 +263,34 @@ fun Detail(
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        // --- Tombol Pengingat yang Diperbaiki ---
+                        Button(
+                            onClick = {
+                                viewModel.toggleFavorite(evt)
+                                val message = if (evt.isFavorite) "Dihapus dari favorit" else "Ditambahkan ke favorit"
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text(text = if (evt.isFavorite) "Hapus dari Favorit" else "Tambahkan ke Favorit")
+                        }
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
                         Button(
                             onClick = {
                                 val newState = !isReminded
                                 isReminded = newState
 
-                                // Simpan state baru ke SharedPreferences
                                 with(sharedPrefs.edit()) {
                                     putBoolean(eventId, newState)
                                     apply()
                                 }
 
                                 if (newState) {
-                                    // Jika tombol diaktifkan, set pengingat
                                     setReminder(evt)
                                     Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
                                 } else {
-                                    // Jika tombol dinonaktifkan, batalkan pengingat
                                     cancelReminder()
                                     Toast.makeText(context, "Pengingat dibatalkan.", Toast.LENGTH_SHORT).show()
                                 }
@@ -308,18 +327,6 @@ fun Detail(
                         }
                     }
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = stringResource(R.string.description),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    text = evt.description
-                )
 
                 Spacer(modifier = Modifier.height(24.dp))
                 Image(

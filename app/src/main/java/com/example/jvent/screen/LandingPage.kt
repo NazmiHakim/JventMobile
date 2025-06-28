@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Dashboard
@@ -43,20 +44,17 @@ fun LandingPage(
     navigateToSettings: () -> Unit,
     navigateToDetail: (String) -> Unit,
     navigateToDashboard: () -> Unit,
+    navigateToFavorites: () -> Unit,
     isLoggedIn: Boolean
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    // --- NEW LOGIC ---
-    // Get the ViewModel using the factory
     val eventListViewModel: EventListViewModel = viewModel(
         factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
     )
-    // Collect events from the ViewModel's Flow
     val events by eventListViewModel.allEvents.collectAsState(initial = emptyList())
-    // --- END NEW LOGIC ---
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -87,6 +85,15 @@ fun LandingPage(
                     onClick = {
                         scope.launch { drawerState.close() }
                         navigateToExploreEvent()
+                    }
+                )
+                NavigationDrawerItem(
+                    label = { Text("Favorit", color = MaterialTheme.colorScheme.onPrimary) },
+                    icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        navigateToFavorites()
                     }
                 )
                 NavigationDrawerItem(
@@ -229,7 +236,6 @@ fun PopularEventSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (events.isEmpty()) {
-            // This can now show when the cache is empty
             Text("No events available", modifier = Modifier.padding(16.dp))
         } else {
             LazyRow(
