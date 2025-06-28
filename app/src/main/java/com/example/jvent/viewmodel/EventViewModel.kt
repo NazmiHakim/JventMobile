@@ -1,22 +1,14 @@
 package com.example.jvent.viewmodel
 
-import android.Manifest
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.core.app.ActivityCompat
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.ImgurApiClient
-import com.example.jvent.MainActivity
-import com.example.jvent.R
 import com.example.jvent.model.Event
 import com.example.jvent.repository.EventRepository
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -26,6 +18,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -59,11 +52,25 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
         analytics = Firebase.analytics
     }
 
-    fun toggleFavorite(event: Event) {
-        viewModelScope.launch {
-            repository?.updateEvent(event.copy(isFavorite = !event.isFavorite))
+    // --- FUNGSI BARU UNTUK UI ---
+    fun getEventById(eventId: String): Flow<Event?> {
+        return repository!!.getEventById(eventId)
+    }
+    // ---------------------------
+
+    // --- FUNGSI UPDATE FAVORIT (HANYA LOKAL) ---
+    fun updateFavoriteStatus(event: Event, isFavorite: Boolean, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            // Hanya update database lokal (Room) melalui repository
+            repository?.updateEvent(event.copy(isFavorite = isFavorite))
+
+            withContext(Dispatchers.Main) {
+                val message = if (isFavorite) "Ditambahkan ke favorit" else "Dihapus dari favorit"
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
+    // ------------------------------------------
 
     fun resetForm() {
         eventName = ""
@@ -191,39 +198,12 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     param("event_type", eventType)
                     param("event_location", location)
                 }
-
-                sendNewEventNotification(context)
                 onSuccess()
             } catch (e: Exception) {
                 error = e.message ?: "Gagal membuat event"
                 onError(error!!)
             } finally {
                 isLoading = false
-            }
-        }
-    }
-
-    private fun sendNewEventNotification(context: Context) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
-
-        val builder = NotificationCompat.Builder(context, "NEW_EVENT_CHANNEL_ID")
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setContentTitle("Ada event baru nih!")
-            .setContentText("cek sekarang yuk!")
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
-        with(NotificationManagerCompat.from(context)) {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                notify(System.currentTimeMillis().toInt(), builder.build())
             }
         }
     }

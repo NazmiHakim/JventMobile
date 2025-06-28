@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -31,7 +32,6 @@ import com.example.jvent.viewmodel.EventViewModel
 import com.example.jvent.viewmodel.EventViewModelFactory
 import com.example.jvent.workers.NotificationWorker
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -43,16 +43,13 @@ fun Detail(
     navigateToEdit: () -> Unit,
     onEventDeleted: () -> Unit
 ) {
-    val db = Firebase.firestore
     val auth = Firebase.auth
     val context = LocalContext.current
     val viewModel: EventViewModel = viewModel(
         factory = EventViewModelFactory((context.applicationContext as JventApplication).repository)
     )
-    var event by remember { mutableStateOf<Event?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf<String?>(null) }
 
+    val event by viewModel.getEventById(eventId).collectAsState(initial = null)
 
     var showDeleteDialog by remember { mutableStateOf(false) }
 
@@ -111,28 +108,6 @@ fun Detail(
         workManager.cancelAllWorkByTag(eventId)
     }
 
-    DisposableEffect(eventId) {
-        isLoading = true
-        val listener = db.collection("events").document(eventId)
-            .addSnapshotListener { snapshot, e ->
-                isLoading = false
-                if (e != null) {
-                    error = "Gagal memuat data: ${e.message}"
-                    Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null && snapshot.exists()) {
-                    event = snapshot.toObject(Event::class.java)?.copy(id = snapshot.id)
-                } else {
-                    error = "Event tidak ditemukan."
-                }
-            }
-        onDispose {
-            listener.remove()
-        }
-    }
-
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
@@ -173,7 +148,14 @@ fun Detail(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        event?.let { evt ->
+        val currentEvent = event
+
+        if (currentEvent == null) {
+            // Tampilkan loading indicator atau pesan saat data masih dimuat
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
             Column(
                 modifier = Modifier
                     .padding(innerPadding)
@@ -181,7 +163,7 @@ fun Detail(
                     .verticalScroll(rememberScrollState())
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter(evt.imageUrl),
+                    painter = rememberAsyncImagePainter(currentEvent.imageUrl),
                     contentDescription = stringResource(R.string.description),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -199,7 +181,7 @@ fun Detail(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     color = MaterialTheme.colorScheme.onPrimary,
-                    text = evt.description
+                    text = currentEvent.description
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -214,18 +196,18 @@ fun Detail(
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = evt.title,
+                            text = currentEvent.title,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = evt.location,
+                            text = currentEvent.location,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = evt.dateTime,
+                            text = currentEvent.dateTime,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -234,17 +216,17 @@ fun Detail(
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Text(
-                            text = evt.organizer,
+                            text = currentEvent.organizer,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.onPrimary
                         )
                         Spacer(modifier = Modifier.height(6.dp))
-                        if (evt.platformLink.isNotEmpty()) {
+                        if (currentEvent.platformLink.isNotEmpty()) {
                             Button(
                                 onClick = {
                                     try {
                                         val intent =
-                                            Intent(Intent.ACTION_VIEW, evt.platformLink.toUri())
+                                            Intent(Intent.ACTION_VIEW, currentEvent.platformLink.toUri())
                                         context.startActivity(intent)
                                     } catch (e: Exception) {
                                         Toast.makeText(
@@ -263,18 +245,16 @@ fun Detail(
 
                         Spacer(modifier = Modifier.height(6.dp))
 
+                        // Tombol Favorit (tanpa perlu login)
                         Button(
                             onClick = {
-                                viewModel.toggleFavorite(evt)
-                                val message = if (evt.isFavorite) "Dihapus dari favorit" else "Ditambahkan ke favorit"
-                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                viewModel.updateFavoriteStatus(currentEvent, !currentEvent.isFavorite, context)
                             },
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Text(text = if (evt.isFavorite) "Hapus dari Favorit" else "Tambahkan ke Favorit")
+                            Text(text = if (currentEvent.isFavorite) "Batalkan Favorit" else "Tambahkan ke Favorit")
                         }
-
                         Spacer(modifier = Modifier.height(6.dp))
 
                         Button(
@@ -288,7 +268,7 @@ fun Detail(
                                 }
 
                                 if (newState) {
-                                    setReminder(evt)
+                                    setReminder(currentEvent)
                                     Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
                                 } else {
                                     cancelReminder()
@@ -305,7 +285,8 @@ fun Detail(
                     }
                 }
 
-                if (auth.currentUser != null && auth.currentUser?.uid == evt.userId) {
+                // Gunakan 'currentEvent' di sini juga
+                if (auth.currentUser != null && auth.currentUser?.uid == currentEvent.userId) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),

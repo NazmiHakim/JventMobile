@@ -18,6 +18,11 @@ interface EventDao {
     @Query("SELECT * FROM events WHERE isFavorite = 1 ORDER BY createdAt DESC")
     fun getFavoriteEvents(): Flow<List<Event>>
 
+    // --- TAMBAHKAN FUNGSI INI ---
+    @Query("SELECT * FROM events WHERE id = :id")
+    fun getEventById(id: String): Flow<Event?>
+    // -------------------------
+
     // Inserts a list of events. Replaces on conflict.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(events: List<Event>)
