@@ -150,18 +150,18 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            item {
-                TextButton(
-                    onClick = navigateToRegistration,
-                    enabled = !viewModel.isLoading
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.dont_have_account),
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
-                Spacer(modifier = Modifier.height(32.dp))
-            }
+item {
+//                TextButton(
+//                    onClick = navigateToRegistration,
+//                    enabled = !viewModel.isLoading
+//                ) {
+//                    Text(
+//                        text = stringResource(id = R.string.dont_have_account),
+//                        color = MaterialTheme.colorScheme.primary
+//                    )
+//                }
+    Spacer(modifier = Modifier.height(58.dp))
+              }
         }
     }
 }
