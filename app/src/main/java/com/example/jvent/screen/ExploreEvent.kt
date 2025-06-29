@@ -18,7 +18,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -38,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jvent.JventApplication
 import com.example.jvent.R
+import com.example.jvent.components.CustomFilterChip
 import com.example.jvent.components.EventCard
 import com.example.jvent.viewmodel.EventListViewModel
 import com.example.jvent.viewmodel.EventViewModelFactory
@@ -103,15 +103,15 @@ fun ExploreEvent(
 
             item {
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(
+                    CustomFilterChip(
+                        text = stringResource(R.string.active_event),
                         selected = selectedFilter == "current",
                         onClick = { eventListViewModel.onFilterChange("current") },
-                        label = { Text(stringResource(R.string.active_event)) }
                     )
-                    FilterChip(
+                    CustomFilterChip(
+                        text = stringResource(R.string.past_event),
                         selected = selectedFilter == "past",
                         onClick = { eventListViewModel.onFilterChange("past") },
-                        label = { Text(stringResource(R.string.past_event)) }
                     )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
@@ -165,7 +165,7 @@ fun ExploreEvent(
                         stringResource(R.string.next_month)
                     )
                     timeOptions.forEach { option ->
-                        FilterChip(
+                        CustomFilterChip(
                             text = option,
                             selected = timeFilter == option,
                             onClick = {
@@ -190,7 +190,7 @@ fun ExploreEvent(
                         stringResource(R.string.paid_event)
                     )
                     priceOptions.forEach { option ->
-                        FilterChip(
+                        CustomFilterChip(
                             text = option,
                             modifier = Modifier.weight(1f),
                             selected = priceFilter == option,
@@ -211,22 +211,4 @@ fun ExploreEvent(
             }
         }
     }
-}
-
-@Composable
-fun FilterChip(
-    text: String,
-    modifier: Modifier = Modifier,
-    selected: Boolean = false,
-    onClick: () -> Unit = {}
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        label = {
-            Text(text = text)
-        },
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp)
-    )
 }

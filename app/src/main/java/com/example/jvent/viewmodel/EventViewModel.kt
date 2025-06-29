@@ -48,6 +48,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     var eventType by mutableStateOf("")
     var price by mutableStateOf("")
     private var eventUserId: String? = null
+    var showDeleteDialog by mutableStateOf(false)
 
     fun getEventById(eventId: String): Flow<Event?> {
         return repository!!.getEventById(eventId)

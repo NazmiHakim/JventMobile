@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jvent.JventApplication
 import com.example.jvent.R
+import com.example.jvent.components.CustomFilterChip
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventCard
 import com.example.jvent.viewmodel.EventListViewModel
@@ -76,15 +76,15 @@ fun Dashboard(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        FilterChip(
+                        CustomFilterChip(
                             selected = selectedFilter == "current",
                             onClick = { eventListViewModel.onFilterChange("current") },
-                            label = { Text(stringResource(R.string.active_event)) }
+                            text = stringResource(R.string.active_event)
                         )
-                        FilterChip(
+                        CustomFilterChip(
                             selected = selectedFilter == "past",
                             onClick = { eventListViewModel.onFilterChange("past") },
-                            label = { Text(stringResource(R.string.past_event)) }
+                            text = stringResource(R.string.past_event)
                         )
                     }
 
