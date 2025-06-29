@@ -244,7 +244,6 @@ fun Detail(
                         }
 
                         Spacer(modifier = Modifier.height(6.dp))
-
                         Button(
                             onClick = {
                                 viewModel.updateFavoriteStatus(currentEvent, !currentEvent.isFavorite, context)

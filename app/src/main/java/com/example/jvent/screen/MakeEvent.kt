@@ -153,7 +153,7 @@ fun MakeEvent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { datePickerDialog.show() },
-                    enabled = false, // Agar keyboard tidak muncul
+                    enabled = false,
                     trailingIcon = {
                         Icon(
                             Icons.Default.DateRange,

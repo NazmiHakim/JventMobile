@@ -49,16 +49,12 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     var price by mutableStateOf("")
     private var eventUserId: String? = null
 
-    // --- FUNGSI BARU UNTUK UI ---
     fun getEventById(eventId: String): Flow<Event?> {
         return repository!!.getEventById(eventId)
     }
-    // ---------------------------
 
-    // --- FUNGSI UPDATE FAVORIT (HANYA LOKAL) ---
     fun updateFavoriteStatus(event: Event, isFavorite: Boolean, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            // Hanya update database lokal (Room) melalui repository
             repository?.updateEvent(event.copy(isFavorite = isFavorite))
 
             withContext(Dispatchers.Main) {
@@ -67,7 +63,6 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
             }
         }
     }
-    // ------------------------------------------
 
     fun resetForm(context: Context) {
         eventName = ""

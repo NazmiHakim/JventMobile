@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 class EventListViewModel(repository: EventRepository) : ViewModel() {
 
-    val allEvents: StateFlow<List<Event>> = repository.allEvents
+    private val allEvents: StateFlow<List<Event>> = repository.allEvents
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000L),

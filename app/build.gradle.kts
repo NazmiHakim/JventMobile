@@ -3,7 +3,6 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
-    // Terapkan plugin Firebase Crashlytics
     id("com.google.firebase.crashlytics")
 }
 
@@ -86,14 +85,13 @@ dependencies {
     // Lottie
     implementation("com.airbnb.android:lottie-compose:5.0.3")
 
-    // Firebase BoM (kelola semua versi Firebase otomatis)
+    // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:32.7.3"))
-    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth-ktx")
-    // Tambahkan dependensi Firebase Crashlytics
     implementation("com.google.firebase:firebase-crashlytics")
 
     // FirebaseUI

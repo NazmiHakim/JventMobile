@@ -16,7 +16,6 @@ class JventApplication : Application() {
         super.onCreate()
         createNotificationChannel()
 
-        // Contoh logging kustom dengan Crashlytics
         FirebaseCrashlytics.getInstance().log("Aplikasi Jvent dimulai")
     }
 
