@@ -33,7 +33,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     private val firestore = FirebaseFirestore.getInstance()
     private val auth = Firebase.auth
     private val imgurApiService = ImgurApiClient.apiService
-    private lateinit var analytics: FirebaseAnalytics
+    private var analytics: FirebaseAnalytics = Firebase.analytics
 
     var eventName by mutableStateOf("")
     var dateTime by mutableStateOf("")
@@ -48,10 +48,6 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     var eventType by mutableStateOf("")
     var price by mutableStateOf("")
     private var eventUserId: String? = null
-
-    init {
-        analytics = Firebase.analytics
-    }
 
     // --- FUNGSI BARU UNTUK UI ---
     fun getEventById(eventId: String): Flow<Event?> {

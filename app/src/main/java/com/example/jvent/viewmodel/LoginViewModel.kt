@@ -70,7 +70,7 @@ class LoginViewModel(
                 .onSuccess {
                     onSuccess()
                 }
-                .onFailure { e ->
+                .onFailure {
                     error = R.string.login_failed_error
                     onError(error!!)
                 }

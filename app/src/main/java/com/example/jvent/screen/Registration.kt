@@ -1,4 +1,3 @@
-// RegistrationScreen.kt
 package com.example.jvent.screen
 
 import android.widget.Toast
@@ -126,7 +125,6 @@ fun RegistrationScreen(
                                 }
                             },
                             onError = {
-                                // Error is already shown via LaunchedEffect
                             }
                         )
                     },

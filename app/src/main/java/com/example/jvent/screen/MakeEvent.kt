@@ -31,7 +31,7 @@ import com.example.jvent.components.EventTextField
 import com.example.jvent.viewmodel.EventViewModel
 import java.util.Calendar
 
-@OptIn(ExperimentalMaterial3Api::class) // Diperlukan untuk ExposedDropdownMenuBox
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MakeEvent(
     navigateToDashboard: () -> Unit,
@@ -49,7 +49,6 @@ fun MakeEvent(
         }
     )
 
-    // Tampilkan error menggunakan Toast, karena validasi sekarang ada di ViewModel
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let { error ->
             Toast.makeText(context, error, Toast.LENGTH_LONG).show()
@@ -179,7 +178,6 @@ fun MakeEvent(
                 )
             }
 
-            // + Tambahkan Dropdown untuk Tipe Event
             item {
                 val eventTypes = listOf(stringResource(id = R.string.free_event), paidEventString)
                 var expanded by remember { mutableStateOf(false) }
@@ -261,7 +259,6 @@ fun MakeEvent(
                                 viewModel.resetForm(context)
                             },
                             onError = {
-                                // Toast sudah ditangani oleh LaunchedEffect
                             }
                         )
                     },

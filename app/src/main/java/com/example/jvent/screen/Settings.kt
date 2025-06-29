@@ -1,4 +1,3 @@
-// SettingsScreen.kt
 package com.example.jvent.screen
 
 import android.content.Context

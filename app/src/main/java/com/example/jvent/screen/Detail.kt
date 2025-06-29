@@ -152,7 +152,6 @@ fun Detail(
         val currentEvent = event
 
         if (currentEvent == null) {
-            // Tampilkan loading indicator atau pesan saat data masih dimuat
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
@@ -246,7 +245,6 @@ fun Detail(
 
                         Spacer(modifier = Modifier.height(6.dp))
 
-                        // Tombol Favorit (tanpa perlu login)
                         Button(
                             onClick = {
                                 viewModel.updateFavoriteStatus(currentEvent, !currentEvent.isFavorite, context)
@@ -286,7 +284,6 @@ fun Detail(
                     }
                 }
 
-                // Gunakan 'currentEvent' di sini juga
                 if (auth.currentUser != null && auth.currentUser?.uid == currentEvent.userId) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(

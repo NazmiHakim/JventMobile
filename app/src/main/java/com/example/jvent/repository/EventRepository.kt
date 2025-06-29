@@ -20,11 +20,9 @@ class EventRepository(private val eventDao: EventDao) {
         listenForEventUpdates()
     }
 
-    // --- TAMBAHKAN FUNGSI INI ---
     fun getEventById(id: String): Flow<Event?> {
         return eventDao.getEventById(id)
     }
-    // ----------------------------
 
     suspend fun updateEvent(event: Event) {
         eventDao.updateEvent(event)

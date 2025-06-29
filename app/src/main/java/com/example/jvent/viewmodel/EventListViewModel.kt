@@ -35,7 +35,7 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
-    private val _selectedFilter = MutableStateFlow("current") // "current" atau "past"
+    private val _selectedFilter = MutableStateFlow("current") // "current" or "past"
     val selectedFilter: StateFlow<String> = _selectedFilter
 
     // State untuk filter waktu dan harga
@@ -58,7 +58,7 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
                 }
 
                 if (eventDate == null) {
-                    false // Abaikan event dengan format tanggal yang salah
+                    false
                 } else {
                     val pastDateThreshold = Date(eventDate.time + TimeUnit.DAYS.toMillis(1))
 
@@ -74,7 +74,6 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
                 val calendar = Calendar.getInstance()
                 calendar.firstDayOfWeek = Calendar.MONDAY
 
-                // Fungsi untuk mengatur waktu ke awal hari
                 fun Calendar.toStartOfDay(): Calendar {
                     this.set(Calendar.HOUR_OF_DAY, 0)
                     this.set(Calendar.MINUTE, 0)
@@ -83,7 +82,6 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
                     return this
                 }
 
-                // Fungsi untuk mengatur waktu ke akhir hari
                 fun Calendar.toEndOfDay(): Calendar {
                     this.set(Calendar.HOUR_OF_DAY, 23)
                     this.set(Calendar.MINUTE, 59)

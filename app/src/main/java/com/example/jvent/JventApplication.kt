@@ -21,7 +21,6 @@ class JventApplication : Application() {
     }
 
     private fun createNotificationChannel() {
-        // Channel untuk event baru
         val name = "Event Baru"
         val descriptionText = "Notifikasi untuk event baru"
         val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -29,7 +28,6 @@ class JventApplication : Application() {
             description = descriptionText
         }
 
-        // Channel untuk pengingat
         val reminderChannelName = "Pengingat Event"
         val reminderChannelDesc = "Notifikasi untuk mengingatkan event yang akan datang"
         val reminderChannelImportance = NotificationManager.IMPORTANCE_DEFAULT

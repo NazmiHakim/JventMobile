@@ -1,4 +1,4 @@
-package com.example.jvent.viewmodel// com.example.jvent.viewmodel.SettingsViewModel.kt
+package com.example.jvent.viewmodel
 import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
