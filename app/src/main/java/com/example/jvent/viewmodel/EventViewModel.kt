@@ -1,14 +1,22 @@
 package com.example.jvent.viewmodel
 
+import android.Manifest
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.ImgurApiClient
+import com.example.jvent.MainActivity
 import com.example.jvent.R
 import com.example.jvent.model.Event
 import com.example.jvent.repository.EventRepository
@@ -194,6 +202,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                 )
 
                 saveEventToFirestore(event)
+                sendNewEventNotification(context, event)
 
                 analytics.logEvent("event_created") {
                     param("event_name", eventName)
@@ -323,5 +332,33 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
 
     private suspend fun saveEventToFirestore(event: Event) {
         firestore.collection("events").add(event).await()
+    }
+
+    private fun sendNewEventNotification(context: Context, event: Event) {
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val notification = NotificationCompat.Builder(context, "NEW_EVENT_CHANNEL_ID")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle(context.getString(R.string.new_event_channel_name))
+            .setContentText("${event.title} ${context.getString(R.string.event_created_success)}")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        with(NotificationManagerCompat.from(context)) {
+            notify(event.id.hashCode(), notification)
+        }
     }
 }

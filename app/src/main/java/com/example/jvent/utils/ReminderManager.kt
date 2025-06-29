@@ -1,6 +1,7 @@
 package com.example.jvent.utils
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -20,12 +21,17 @@ object ReminderManager {
         val eventDate = try {
             format.parse(eventDateStr)
         } catch (e: Exception) {
+            Log.e("ReminderManager", "Gagal mem-parsing tanggal: $eventDateStr", e)
             null
         }
         val currentTime = System.currentTimeMillis()
 
         if (eventDate != null) {
             val timeDiff = eventDate.time - currentTime
+            if (timeDiff <= 0) {
+                Log.w("ReminderManager", "Event sudah lewat, tidak ada pengingat yang diatur.")
+                return
+            }
 
             val countdowns = listOf(
                 Triple(3, TimeUnit.DAYS, "3 hari"),
@@ -53,10 +59,12 @@ object ReminderManager {
                     workManager.enqueue(reminderWorkRequest)
                 }
             }
+            Log.d("ReminderManager", "Pengingat diatur untuk event: ${event.title} dengan ID: ${event.id}")
         }
     }
 
     fun cancelReminder(context: Context, eventId: String) {
         WorkManager.getInstance(context).cancelAllWorkByTag(eventId)
+        Log.d("ReminderManager", "Pengingat untuk event ID: $eventId dibatalkan.")
     }
 }

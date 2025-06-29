@@ -20,23 +20,24 @@ class JventApplication : Application() {
     }
 
     private fun createNotificationChannel() {
-        val name = "Event Baru"
-        val descriptionText = "Notifikasi untuk event baru"
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel("NEW_EVENT_CHANNEL_ID", name, importance).apply {
-            description = descriptionText
+        val newEventChannelName = getString(R.string.new_event_channel_name)
+        val newEventChannelDesc = getString(R.string.new_event_channel_desc)
+        val newEventImportance = NotificationManager.IMPORTANCE_DEFAULT
+        val newEventChannel = NotificationChannel("NEW_EVENT_CHANNEL_ID", newEventChannelName, newEventImportance).apply {
+            description = newEventChannelDesc
         }
 
-        val reminderChannelName = "Pengingat Event"
-        val reminderChannelDesc = "Notifikasi untuk mengingatkan event yang akan datang"
-        val reminderChannelImportance = NotificationManager.IMPORTANCE_DEFAULT
+        // Channel untuk Pengingat Event
+        val reminderChannelName = getString(R.string.reminder_channel_name)
+        val reminderChannelDesc = getString(R.string.reminder_channel_desc)
+        val reminderChannelImportance = NotificationManager.IMPORTANCE_HIGH
         val reminderChannel = NotificationChannel("REMINDER_CHANNEL_ID", reminderChannelName, reminderChannelImportance).apply {
             description = reminderChannelDesc
         }
 
         val notificationManager: NotificationManager =
             getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
+        notificationManager.createNotificationChannel(newEventChannel)
         notificationManager.createNotificationChannel(reminderChannel)
     }
 }
