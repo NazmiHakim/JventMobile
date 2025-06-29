@@ -10,9 +10,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,7 +53,7 @@ fun Detail(
 
     val event by viewModel.getEventById(eventId).collectAsState(initial = null)
 
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    var showDeleteDialog by rememberSaveable { mutableStateOf(false) }
 
     val sharedPrefs = context.getSharedPreferences("reminder_prefs", Context.MODE_PRIVATE)
 
@@ -111,8 +113,8 @@ fun Detail(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text(stringResource(id = R.string.delete_event_dialog_title)) },
-            text = { Text(stringResource(id = R.string.delete_event_dialog_text)) },
+            title = { Text(stringResource(id = R.string.delete_event_dialog_title), color = Color.White) },
+            text = { Text(stringResource(id = R.string.delete_event_dialog_text), color = Color.White) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -132,12 +134,12 @@ fun Detail(
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text(stringResource(id = R.string.delete_button))
+                    Text(stringResource(id = R.string.delete_button), color = Color.White)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text(stringResource(id = R.string.cancel_button))
+                    Text(stringResource(id = R.string.cancel_button), color = Color.White)
                 }
             }
         )
