@@ -10,6 +10,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class EventListViewModel(repository: EventRepository) : ViewModel() {
 
@@ -30,12 +34,39 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
 
+    private val _selectedFilter = MutableStateFlow("current") // "current" atau "past"
+    val selectedFilter: StateFlow<String> = _selectedFilter
+
     val filteredEvents: StateFlow<List<Event>> =
-        combine(allEvents, _searchQuery) { events, query ->
+        combine(allEvents, _searchQuery, _selectedFilter) { events, query, filter ->
+            val now = Date()
+            val dateFormat = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+
+            val filtered = events.filter { event ->
+                val eventDate = try {
+                    dateFormat.parse(event.dateTime)
+                } catch (e: Exception) {
+                    null
+                }
+
+                if (eventDate == null) {
+                    false // Abaikan event dengan format tanggal yang salah
+                } else {
+                    // Batas waktu adalah 1 hari setelah event berakhir
+                    val pastDateThreshold = Date(eventDate.time + TimeUnit.DAYS.toMillis(1))
+
+                    if (filter == "current") {
+                        pastDateThreshold.after(now) // Event dianggap "sekarang" jika belum melewati 1 hari
+                    } else {
+                        pastDateThreshold.before(now) // Event dianggap "lalu" jika sudah melewati 1 hari
+                    }
+                }
+            }
+
             if (query.isBlank()) {
-                events
+                filtered
             } else {
-                events.filter { it.title.contains(query, ignoreCase = true) }
+                filtered.filter { it.title.contains(query, ignoreCase = true) }
             }
         }.stateIn(
             scope = viewModelScope,
@@ -45,6 +76,10 @@ class EventListViewModel(repository: EventRepository) : ViewModel() {
 
     fun onSearchQueryChange(query: String) {
         _searchQuery.value = query
+    }
+
+    fun onFilterChange(filter: String) {
+        _selectedFilter.value = filter
     }
 }
 

@@ -14,22 +14,19 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -52,12 +49,7 @@ fun Dashboard(
     )
     val events by eventListViewModel.filteredEvents.collectAsState()
     val searchQuery by eventListViewModel.searchQuery.collectAsState()
-
-    var selectedTab by rememberSaveable { mutableIntStateOf(0) }
-    val tabs = listOf(
-        stringResource(R.string.active_event),
-        stringResource(R.string.past_event)
-    )
+    val selectedFilter by eventListViewModel.selectedFilter.collectAsState()
 
     Scaffold(
         topBar = {
@@ -83,17 +75,18 @@ fun Dashboard(
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        horizontalArrangement = Arrangement.SpaceAround
                     ) {
-                        tabs.forEachIndexed { index, title ->
-                            TextButton(onClick = { selectedTab = index }) {
-                                Text(
-                                    text = title,
-                                    fontWeight = if (selectedTab == index) FontWeight.Bold else FontWeight.Normal,
-                                    color = if (selectedTab == index) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
-                                )
-                            }
-                        }
+                        FilterChip(
+                            selected = selectedFilter == "current",
+                            onClick = { eventListViewModel.onFilterChange("current") },
+                            label = { Text(stringResource(R.string.active_event)) }
+                        )
+                        FilterChip(
+                            selected = selectedFilter == "past",
+                            onClick = { eventListViewModel.onFilterChange("past") },
+                            label = { Text(stringResource(R.string.past_event)) }
+                        )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))

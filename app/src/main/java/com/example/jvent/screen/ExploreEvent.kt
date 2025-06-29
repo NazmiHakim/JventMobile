@@ -53,6 +53,7 @@ fun ExploreEvent(
     )
     val events by eventListViewModel.filteredEvents.collectAsState()
     val searchQuery by eventListViewModel.searchQuery.collectAsState()
+    val selectedFilter by eventListViewModel.selectedFilter.collectAsState()
 
     val isLoading = false
 
@@ -96,6 +97,22 @@ fun ExploreEvent(
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
+            }
+
+            item {
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    FilterChip(
+                        selected = selectedFilter == "current",
+                        onClick = { eventListViewModel.onFilterChange("current") },
+                        label = { Text(stringResource(R.string.active_event)) }
+                    )
+                    FilterChip(
+                        selected = selectedFilter == "past",
+                        onClick = { eventListViewModel.onFilterChange("past") },
+                        label = { Text(stringResource(R.string.past_event)) }
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
             if (isLoading) {
@@ -167,6 +184,7 @@ fun ExploreEvent(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChip(
     text: String,
