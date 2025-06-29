@@ -38,6 +38,14 @@ class MainActivity : ComponentActivity() {
 
         auth = Firebase.auth
 
+        val prefs = getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isFirstRun = prefs.getBoolean("is_first_run_v2", true)
+
+        if (isFirstRun) {
+            auth.signOut()
+            prefs.edit().putBoolean("is_first_run_v2", false).apply()
+        }
+
         val isDarkMode = getDarkModePref()
         setContent {
             JventTheme(darkTheme = isDarkMode) {
