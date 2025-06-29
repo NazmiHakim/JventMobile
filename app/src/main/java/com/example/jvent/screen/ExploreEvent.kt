@@ -54,6 +54,8 @@ fun ExploreEvent(
     val events by eventListViewModel.filteredEvents.collectAsState()
     val searchQuery by eventListViewModel.searchQuery.collectAsState()
     val selectedFilter by eventListViewModel.selectedFilter.collectAsState()
+    val timeFilter by eventListViewModel.timeFilter.collectAsState()
+    val priceFilter by eventListViewModel.priceFilter.collectAsState()
 
     val isLoading = false
 
@@ -155,14 +157,25 @@ fun ExploreEvent(
                 Text(stringResource(R.string.search_by_time), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    listOf(
+                    val timeOptions = listOf(
                         stringResource(R.string.today),
                         stringResource(R.string.tomorrow),
                         stringResource(R.string.this_week),
                         stringResource(R.string.next_week),
                         stringResource(R.string.next_month)
-                    ).forEach {
-                        FilterChip(text = it)
+                    )
+                    timeOptions.forEach { option ->
+                        FilterChip(
+                            text = option,
+                            selected = timeFilter == option,
+                            onClick = {
+                                if (timeFilter == option) {
+                                    eventListViewModel.onTimeFilterChange(null)
+                                } else {
+                                    eventListViewModel.onTimeFilterChange(option)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -172,8 +185,24 @@ fun ExploreEvent(
                 Text(stringResource(R.string.search_by_price), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(text = stringResource(R.string.free_event), modifier = Modifier.weight(1f))
-                    FilterChip(text = stringResource(R.string.paid_event), modifier = Modifier.weight(1f))
+                    val priceOptions = listOf(
+                        stringResource(R.string.free_event),
+                        stringResource(R.string.paid_event)
+                    )
+                    priceOptions.forEach { option ->
+                        FilterChip(
+                            text = option,
+                            modifier = Modifier.weight(1f),
+                            selected = priceFilter == option,
+                            onClick = {
+                                if (priceFilter == option) {
+                                    eventListViewModel.onPriceFilterChange(null)
+                                } else {
+                                    eventListViewModel.onPriceFilterChange(option)
+                                }
+                            }
+                        )
+                    }
                 }
             }
 
@@ -184,7 +213,6 @@ fun ExploreEvent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterChip(
     text: String,
