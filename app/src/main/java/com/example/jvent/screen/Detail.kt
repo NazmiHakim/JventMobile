@@ -111,32 +111,33 @@ fun Detail(
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Hapus Event") },
-            text = { Text("Apakah Anda yakin ingin menghapus event ini secara permanen?") },
+            title = { Text(stringResource(id = R.string.delete_event_dialog_title)) },
+            text = { Text(stringResource(id = R.string.delete_event_dialog_text)) },
             confirmButton = {
                 Button(
                     onClick = {
                         viewModel.deleteEvent(
                             eventId = eventId,
                             onSuccess = {
-                                Toast.makeText(context, "Event berhasil dihapus", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.event_deleted_success, Toast.LENGTH_SHORT).show()
                                 showDeleteDialog = false
                                 onEventDeleted()
                             },
                             onError = { errorMsg ->
                                 Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
                                 showDeleteDialog = false
-                            }
+                            },
+                            context = context
                         )
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Hapus")
+                    Text(stringResource(id = R.string.delete_button))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Batal")
+                    Text(stringResource(id = R.string.cancel_button))
                 }
             }
         )
@@ -231,7 +232,7 @@ fun Detail(
                                     } catch (e: Exception) {
                                         Toast.makeText(
                                             context,
-                                            "Tidak dapat membuka link.",
+                                            R.string.link_open_error,
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }
@@ -253,7 +254,7 @@ fun Detail(
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Text(text = if (currentEvent.isFavorite) "Batalkan Favorit" else "Tambahkan ke Favorit")
+                            Text(text = if (currentEvent.isFavorite) stringResource(id = R.string.cancel_favorite) else stringResource(id = R.string.add_to_favorites))
                         }
                         Spacer(modifier = Modifier.height(6.dp))
 
@@ -269,10 +270,10 @@ fun Detail(
 
                                 if (newState) {
                                     setReminder(currentEvent)
-                                    Toast.makeText(context, "Pengingat diaktifkan!", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, R.string.reminder_activated, Toast.LENGTH_SHORT).show()
                                 } else {
                                     cancelReminder()
-                                    Toast.makeText(context, "Pengingat dibatalkan.", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, R.string.reminder_cancelled, Toast.LENGTH_SHORT).show()
                                 }
                             },
                             modifier = Modifier.fillMaxWidth(),
@@ -280,7 +281,7 @@ fun Detail(
                                 containerColor = if (isReminded) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
                             )
                         ) {
-                            Text(text = if (isReminded) "Batalkan Pengingat" else "Ingatkan Saya")
+                            Text(text = if (isReminded) stringResource(id = R.string.cancel_reminder) else stringResource(id = R.string.remind_me))
                         }
                     }
                 }
@@ -297,14 +298,14 @@ fun Detail(
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
-                            Text("Edit Event")
+                            Text(stringResource(id = R.string.edit_event))
                         }
                         Button(
                             onClick = { showDeleteDialog = true },
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                         ) {
-                            Text("Delete Event")
+                            Text(stringResource(id = R.string.delete_button))
                         }
                     }
                 }

@@ -34,8 +34,8 @@
 
     <string name="username">Username</string>
     <string name="email">Email</string>
-    <string name="password">Password</string>
-    <string name="confirm_password">Ketik Ulang Passwod</string>
+    <string name="password">Sandi</string>
+    <string name="confirm_password">Ketik Ulang Sandi</string>
     <string name="register">Daftar</string>
     <string name="have_account">Punya Akun? Login</string>
     <string name="or_continue_with">atau lanjutkan dengan</string>
@@ -63,7 +63,7 @@
     <string name="next_month">Bulan Depan</string>
     <string name="search_by_price">Cari menurut harga</string>
     <string name="event_image">Event Image</string>
-    <string name="favorite">Favorite</string>
+    <string name="favorite">Favorit</string>
 
     //dashboard
     <string name="my_event">Event Saya</string>
@@ -73,8 +73,8 @@
     <string name="past_event">Event Lalu</string>
     <string name="sample_event_title">World Music Festival</string>
     <string name="thank_you_message">Hai, terima kasih telah menggunakan Jvent</string>
-    <string name="create_event_prompt">Silahkan Buat Event Mu dengan klik Button Diatas!</string>
-    <string name="event_date_location">25–27 July, 2025 · Valencia, ES</string>
+    <string name="create_event_prompt">Silahkan Buat Event Mu dengan klik Tombol Diatas!</string>
+    <string name="event_date_location">25–27 Juli, 2025 · Valencia, ES</string>
 
     <string name="event_location">Kota Cinema Mall, Banjarmasin</string>
     <string name="event_time">13:00 – 21:00 WITA</string>
@@ -83,7 +83,7 @@
     <string name="organizer_name">SHIKIFEST</string>
 
     <string name="buy_ticket">BELI TIKET</string>
-    
+
     <string name="event_description">
         Haru no Sakuragi adalah sebuah acara Kebudayaan Jepang yang akan digelar di Banjarmasin, Kalimantan Selatan pada 6 April 2025. Acara ini dirancang untuk menyambut musim semi dengan berbagai kegiatan yang mengangkat keindahan dan tradisi Budaya Jepang, termasuk mekarnya bunga sakura sebagai simbol harapan dan awal yang baru.\n\n
         Acara ini juga akan dimeriahkan dengan pertunjukan seni tradisional, seperti tarian khas Jepang, Performance dari berbagai Bintang Tamu, Kompetisi, hingga Cosplay yang akan menghadirkan karakter anime/manga/game/film favoritmu.\n\n
@@ -93,14 +93,77 @@
     <string name="poster">Poster Event</string>
 
     <string name="login_admin">Login Admin</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Keluar</string>
 
-    <string name="admin_dashboard">Admin Dashboard</string>
+    <string name="admin_dashboard">Dasbor Admin</string>
 
     <string name="all_events">Semua Event</string>
     <string name="no_events_found">Tidak Ada Event Yang Ditemukan</string>
 
-    <string name="platform_link">Link Menuju Platform Pembelian Tiket</string>
+    <string name="platform_link">Tautan Platform Pembelian Tiket</string>
     <string name="description">Deskripsi Event</string>
     <string name="create_event_now">Buat Event Sekarang</string>
+    <string name="search_label">Cari</string>
+    <string name="menu_label">Menu</string>
+    <string name="hero_image_desc">Gambar Hero</string>
+    <string name="no_events_available">Tidak ada event yang tersedia</string>
+    <string name="loading_gif_desc">Memuat GIF</string>
+    <string name="no_favorite_events">Belum ada event favorit.</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="selected_image_desc">Gambar yang dipilih</string>
+    <string name="event_organizer_label">Penyelenggara Event</string>
+    <string name="event_type_label">Tipe Event</string>
+    <string name="event_price_label">Harga Event (Contoh: Rp 25.000)</string>
+    <string name="update_event_button">Perbarui Event</string>
+    <string name="event_updated_success">Event berhasil diperbarui!</string>
+    <string name="event_created_success">Event berhasil dibuat!</string>
+    <string name="select_date_desc">Pilih Tanggal</string>
+    <string name="by_organizer">oleh: %1$s</string>
+    <string name="event_image_desc">Gambar Event</string>
+    <string name="favorite_icon_desc">Favorit</string>
+    <string name="not_favorite_icon_desc">Bukan Favorit</string>
+    <string name="delete_event_dialog_title">Hapus Event</string>
+    <string name="delete_event_dialog_text">Apakah Anda yakin ingin menghapus event ini secara permanen?</string>
+    <string name="delete_button">Hapus</string>
+    <string name="cancel_button">Batal</string>
+    <string name="event_deleted_success">Event berhasil dihapus</string>
+    <string name="link_open_error">Tidak dapat membuka tautan.</string>
+    <string name="cancel_favorite">Batalkan Favorit</string>
+    <string name="add_to_favorites">Tambahkan ke Favorit</string>
+    <string name="reminder_activated">Pengingat diaktifkan!</string>
+    <string name="reminder_cancelled">Pengingat dibatalkan.</string>
+    <string name="cancel_reminder">Batalkan Pengingat</string>
+    <string name="remind_me">Ingatkan Saya</string>
+    <string name="email_empty_error">Email tidak boleh kosong</string>
+    <string name="invalid_email_error">Silakan masukkan email yang valid</string>
+    <string name="password_empty_error">Sandi tidak boleh kosong</string>
+    <string name="password_length_error">Sandi harus terdiri dari minimal 6 karakter</string>
+    <string name="invalid_form_error">Formulir tidak valid</string>
+    <string name="login_failed_error">Gagal masuk</string>
+    <string name="event_poster_empty_error">Poster/gambar event tidak boleh kosong</string>
+    <string name="event_name_empty_error">Nama event tidak boleh kosong</string>
+    <string name="date_time_empty_error">Tanggal dan waktu tidak boleh kosong</string>
+    <string name="location_empty_error">Lokasi tidak boleh kosong</string>
+    <string name="organizer_empty_error">Penyelenggara event tidak boleh kosong</string>
+    <string name="price_empty_error">Harga event tidak boleh kosong jika event berbayar</string>
+    <string name="event_not_found_error">Event tidak ditemukan</string>
+    <string name="load_event_failed_error">Gagal memuat event: %1$s</string>
+    <string name="user_login_required_error">Pengguna harus masuk</string>
+    <string name="create_event_failed_error">Gagal membuat event</string>
+    <string name="image_url_null_error">URL Gambar kosong</string>
+    <string name="update_event_failed_error">Gagal memperbarui event</string>
+    <string name="delete_event_failed_error">Gagal menghapus event</string>
+    <string name="image_link_not_found_error">Tautan gambar tidak ditemukan</string>
+    <string name="image_upload_failed_error">Gagal mengunggah gambar ke Imgur</string>
+    <string name="username_empty_error">Nama pengguna tidak boleh kosong</string>
+    <string name="passwords_no_match_error">Sandi tidak cocok</string>
+    <string name="registration_failed_error">Pendaftaran gagal</string>
+    <string name="added_to_favorites">Ditambahkan ke favorit</string>
+    <string name="removed_from_favorites">Dihapus dari favorit</string>
+    <string name="reminder_channel_name">Pengingat Event</string>
+    <string name="reminder_channel_desc">Notifikasi untuk mengingatkan event yang akan datang</string>
+    <string name="event_reminder_title">Pengingat Event</string>
+    <string name="event_reminder_content">%1$s %2$s lagi nih!</string>
+    <string name="new_event_channel_name">Event Baru</string>
+    <string name="new_event_channel_desc">Notifikasi untuk event baru</string>
 </resources>

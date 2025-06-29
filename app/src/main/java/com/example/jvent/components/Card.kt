@@ -22,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
+import com.example.jvent.R
 import com.example.jvent.model.Event
 
 @Composable
@@ -44,7 +46,7 @@ fun EventCard(
         Box {
             Image(
                 painter = rememberAsyncImagePainter(event.imageUrl),
-                contentDescription = "Event Image",
+                contentDescription = stringResource(id = R.string.event_image_desc),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -54,7 +56,7 @@ fun EventCard(
             if (event.isFavorite) {
                 Icon(
                     imageVector = Icons.Default.Favorite,
-                    contentDescription = "Favorite",
+                    contentDescription = stringResource(id = R.string.favorite_icon_desc),
                     tint = Color.Red,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -63,7 +65,7 @@ fun EventCard(
             } else {
                 Icon(
                     imageVector = Icons.Default.FavoriteBorder,
-                    contentDescription = "Not Favorite",
+                    contentDescription = stringResource(id = R.string.not_favorite_icon_desc),
                     tint = Color.White,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -85,13 +87,13 @@ fun EventCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = if (event.eventType == "Gratis") "Gratis" else event.price,
+                text = if (event.eventType == stringResource(id = R.string.free_event)) stringResource(id = R.string.free_event) else event.price,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "by: ${event.organizer}",
+                text = stringResource(id = R.string.by_organizer, event.organizer),
                 fontSize = 11.sp,
                 color = MaterialTheme.colorScheme.onSecondary,
                 maxLines = 1

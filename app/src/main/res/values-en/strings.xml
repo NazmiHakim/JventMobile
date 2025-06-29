@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Jvent</string>
 
-    <!-- landing page -->
     <string name="make_event">Create Event</string>
     <string name="explore">Explore</string>
     <string name="settings">Settings</string>
@@ -21,14 +20,12 @@
     <string name="call_to_action_1">Have an Event? Showcase it on Jvent Now!</string>
     <string name="call_to_action_button">Register Your Event</string>
 
-    <!-- settings -->
     <string name="dark_mode">Dark Mode</string>
     <string name="language">Language</string>
 
     <string name="indonesia">Indonesian</string>
     <string name="english">English</string>
 
-    <!-- register and login -->
     <string name="make_account">Create your Jvent account</string>
     <string name="register_to_make_event">register to create an event</string>
 
@@ -44,7 +41,6 @@
     <string name="login">Login</string>
     <string name="dont_have_account">Don\'t have an account? Register</string>
 
-    <!-- make event -->
     <string name="upload_image">Upload image/poster/banner</string>
     <string name="event_name">Event Name</string>
     <string name="ticket_category">Ticket Category</string>
@@ -52,7 +48,6 @@
     <string name="location">Location</string>
     <string name="contact_person">Contact Person</string>
 
-    <!-- explore event -->
     <string name="search_placeholder">Search events here</string>
     <string name="search_result_prefix">Events with the keyword "%1$s"</string>
     <string name="search_by_time">Search by time</string>
@@ -65,7 +60,6 @@
     <string name="event_image">Event Image</string>
     <string name="favorite">Favorite</string>
 
-    <!-- dashboard -->
     <string name="my_event">My Events</string>
     <string name="create_event">Create Event</string>
     <string name="search_event_here">Search events here</string>
@@ -103,4 +97,67 @@
     <string name="platform_link">Ticket Purchase Platform Link</string>
     <string name="description">Event Description</string>
     <string name="create_event_now">Create Event Now</string>
+    <string name="search_label">Search</string>
+    <string name="menu_label">Menu</string>
+    <string name="hero_image_desc">Hero Image</string>
+    <string name="no_events_available">No events available</string>
+    <string name="loading_gif_desc">Loading GIF</string>
+    <string name="no_favorite_events">No favorite events yet.</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="selected_image_desc">Selected image</string>
+    <string name="event_organizer_label">Event Organizer</string>
+    <string name="event_type_label">Event Type</string>
+    <string name="event_price_label">Event Price (Example: $25)</string>
+    <string name="update_event_button">Update Event</string>
+    <string name="event_updated_success">Event updated successfully!</string>
+    <string name="event_created_success">Event created successfully!</string>
+    <string name="select_date_desc">Select Date</string>
+    <string name="by_organizer">by: %1$s</string>
+    <string name="event_image_desc">Event Image</string>
+    <string name="favorite_icon_desc">Favorite</string>
+    <string name="not_favorite_icon_desc">Not Favorite</string>
+    <string name="delete_event_dialog_title">Delete Event</string>
+    <string name="delete_event_dialog_text">Are you sure you want to permanently delete this event?</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="event_deleted_success">Event deleted successfully</string>
+    <string name="link_open_error">Could not open link.</string>
+    <string name="cancel_favorite">Unfavorite</string>
+    <string name="add_to_favorites">Add to Favorites</string>
+    <string name="reminder_activated">Reminder activated!</string>
+    <string name="reminder_cancelled">Reminder cancelled.</string>
+    <string name="cancel_reminder">Cancel Reminder</string>
+    <string name="remind_me">Remind Me</string>
+    <string name="email_empty_error">Email cannot be empty</string>
+    <string name="invalid_email_error">Please enter a valid email</string>
+    <string name="password_empty_error">Password cannot be empty</string>
+    <string name="password_length_error">Password must be at least 6 characters</string>
+    <string name="invalid_form_error">Invalid form</string>
+    <string name="login_failed_error">Login failed</string>
+    <string name="event_poster_empty_error">Event poster/image cannot be empty</string>
+    <string name="event_name_empty_error">Event name cannot be empty</string>
+    <string name="date_time_empty_error">Date and time cannot be empty</string>
+    <string name="location_empty_error">Location cannot be empty</string>
+    <string name="organizer_empty_error">Event organizer cannot be empty</string>
+    <string name="price_empty_error">Event price cannot be empty if the event is paid</string>
+    <string name="event_not_found_error">Event not found</string>
+    <string name="load_event_failed_error">Failed to load event: %1$s</string>
+    <string name="user_login_required_error">User must be logged in</string>
+    <string name="create_event_failed_error">Failed to create event</string>
+    <string name="image_url_null_error">Image URL is null</string>
+    <string name="update_event_failed_error">Failed to update event</string>
+    <string name="delete_event_failed_error">Failed to delete event</string>
+    <string name="image_link_not_found_error">Image link not found</string>
+    <string name="image_upload_failed_error">Failed to upload image to Imgur</string>
+    <string name="username_empty_error">Username cannot be empty</string>
+    <string name="passwords_no_match_error">Passwords do not match</string>
+    <string name="registration_failed_error">Registration failed</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="reminder_channel_name">Event Reminders</string>
+    <string name="reminder_channel_desc">Notifications to remind you of upcoming events</string>
+    <string name="event_reminder_title">Event Reminder</string>
+    <string name="event_reminder_content">%1$s is in %2$s!</string>
+    <string name="new_event_channel_name">New Events</string>
+    <string name="new_event_channel_desc">Notifications for new events</string>
 </resources>

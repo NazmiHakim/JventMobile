@@ -147,7 +147,7 @@ fun Dashboard(
                     onClick = onLogout,
                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
                 ) {
-                    Text("Logout")
+                    Text(stringResource(id = R.string.logout))
                 }
             }
         }

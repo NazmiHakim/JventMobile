@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.jvent.ImgurApiClient
+import com.example.jvent.R
 import com.example.jvent.model.Event
 import com.example.jvent.repository.EventRepository
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -44,7 +45,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     var imageUri by mutableStateOf<Uri?>(null)
     var isLoading by mutableStateOf(false)
     var error by mutableStateOf<String?>(null)
-    var eventType by mutableStateOf("Gratis")
+    var eventType by mutableStateOf("")
     var price by mutableStateOf("")
     private var eventUserId: String? = null
 
@@ -65,14 +66,14 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
             repository?.updateEvent(event.copy(isFavorite = isFavorite))
 
             withContext(Dispatchers.Main) {
-                val message = if (isFavorite) "Ditambahkan ke favorit" else "Dihapus dari favorit"
+                val message = if (isFavorite) context.getString(R.string.added_to_favorites) else context.getString(R.string.removed_from_favorites)
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }
     }
     // ------------------------------------------
 
-    fun resetForm() {
+    fun resetForm(context: Context) {
         eventName = ""
         dateTime = ""
         location = ""
@@ -82,46 +83,46 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
         imageUri = null
         imageUrl = null
         eventUserId = null
-        eventType = "Gratis"
+        eventType = context.getString(R.string.free_event)
         price = ""
     }
 
-    private fun validateForm(isUpdate: Boolean = false): Boolean {
+    private fun validateForm(isUpdate: Boolean = false, context: Context): Boolean {
         error = null
         return when {
             !isUpdate && imageUri == null -> {
-                error = "Poster/gambar event tidak boleh kosong"
+                error = context.getString(R.string.event_poster_empty_error)
                 false
             }
             isUpdate && imageUrl.isNullOrBlank() && imageUri == null -> {
-                error = "Poster/gambar event tidak boleh kosong"
+                error = context.getString(R.string.event_poster_empty_error)
                 false
             }
             eventName.isBlank() -> {
-                error = "Nama event tidak boleh kosong"
+                error = context.getString(R.string.event_name_empty_error)
                 false
             }
             dateTime.isBlank() -> {
-                error = "Tanggal dan waktu tidak boleh kosong"
+                error = context.getString(R.string.date_time_empty_error)
                 false
             }
             location.isBlank() -> {
-                error = "Lokasi tidak boleh kosong"
+                error = context.getString(R.string.location_empty_error)
                 false
             }
             organizer.isBlank() -> {
-                error = "Penyelenggara event tidak boleh kosong"
+                error = context.getString(R.string.organizer_empty_error)
                 false
             }
-            eventType == "Berbayar" && price.isBlank() -> {
-                error = "Harga event tidak boleh kosong jika event berbayar"
+            eventType == context.getString(R.string.paid_event) && price.isBlank() -> {
+                error = context.getString(R.string.price_empty_error)
                 false
             }
             else -> true
         }
     }
 
-    fun loadEvent(eventId: String) {
+    fun loadEvent(eventId: String, context: Context) {
         viewModelScope.launch {
             isLoading = true
             error = null
@@ -139,10 +140,10 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     price = event.price
                     eventUserId = event.userId
                 } ?: run {
-                    error = "Event not found"
+                    error = context.getString(R.string.event_not_found_error)
                 }
             } catch (e: Exception) {
-                error = "Failed to load event: ${e.message}"
+                error = context.getString(R.string.load_event_failed_error, e.message)
             } finally {
                 isLoading = false
             }
@@ -154,14 +155,14 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        if (!validateForm(isUpdate = false)) {
+        if (!validateForm(isUpdate = false, context = context)) {
             onError(error!!)
             return
         }
 
         val currentUser = auth.currentUser
         if (currentUser == null) {
-            onError("User must be logged in")
+            onError(context.getString(R.string.user_login_required_error))
             return
         }
 
@@ -188,7 +189,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     imageUrl = imageUrl,
                     userId = currentUser.uid,
                     eventType = eventType,
-                    price = if (eventType == "Gratis") "Gratis" else price
+                    price = if (eventType == context.getString(R.string.free_event)) context.getString(R.string.free_event) else price
                 )
 
                 saveEventToFirestore(event)
@@ -200,7 +201,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                 }
                 onSuccess()
             } catch (e: Exception) {
-                error = e.message ?: "Gagal membuat event"
+                error = e.message ?: context.getString(R.string.create_event_failed_error)
                 onError(error!!)
             } finally {
                 isLoading = false
@@ -214,7 +215,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        if (!validateForm(isUpdate = true)) {
+        if (!validateForm(isUpdate = true, context = context)) {
             onError(error!!)
             return
         }
@@ -233,7 +234,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                         context = context
                     )
                 } else {
-                    imageUrl ?: throw IllegalStateException("Image URL is null")
+                    imageUrl ?: throw IllegalStateException(context.getString(R.string.image_url_null_error))
                 }
 
                 val eventData = mapOf(
@@ -245,13 +246,13 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     "platformLink" to platformLink,
                     "imageUrl" to finalImageUrl,
                     "eventType" to eventType,
-                    "price" to if (eventType == "Gratis") "Gratis" else price
+                    "price" to if (eventType == context.getString(R.string.free_event)) context.getString(R.string.free_event) else price
                 )
 
                 firestore.collection("events").document(eventId).update(eventData).await()
                 onSuccess()
             } catch (e: Exception) {
-                error = e.message ?: "Failed to update event"
+                error = e.message ?: context.getString(R.string.update_event_failed_error)
                 onError(error!!)
             } finally {
                 isLoading = false
@@ -262,7 +263,8 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     fun deleteEvent(
         eventId: String,
         onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        onError: (String) -> Unit,
+        context: Context
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -273,7 +275,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     onSuccess()
                 }
             } catch (e: Exception) {
-                error = e.message ?: "Failed to delete event"
+                error = e.message ?: context.getString(R.string.delete_event_failed_error)
                 withContext(Dispatchers.Main) {
                     onError(error!!)
                 }
@@ -312,9 +314,9 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
             description = descriptionPart
         )
         if (response.isSuccessful && response.body()?.success == true) {
-            return response.body()?.data?.link ?: throw Exception("Image link not found")
+            return response.body()?.data?.link ?: throw Exception(context.getString(R.string.image_link_not_found_error))
         } else {
-            throw Exception(response.message() ?: "Failed to upload image to Imgur")
+            throw Exception(response.message() ?: context.getString(R.string.image_upload_failed_error))
         }
     }
 

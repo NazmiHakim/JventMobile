@@ -31,8 +31,8 @@ fun RegistrationScreen(
 
     // Show error toast when error occurs
     LaunchedEffect(viewModel.error) {
-        viewModel.error?.let { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+        viewModel.error?.let { errorResId ->
+            Toast.makeText(context, context.getString(errorResId), Toast.LENGTH_SHORT).show()
         }
     }
 

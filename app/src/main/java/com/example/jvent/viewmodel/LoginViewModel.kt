@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jvent.R
 import com.example.jvent.repository.AuthRepository
 import kotlinx.coroutines.launch
 
@@ -17,7 +18,7 @@ class LoginViewModel(
         private set
     var isLoading by mutableStateOf(false)
         private set
-    var error by mutableStateOf<String?>(null)
+    var error by mutableStateOf<Int?>(null)
         private set
 
     fun updateEmail(newEmail: String) {
@@ -33,19 +34,19 @@ class LoginViewModel(
     private fun validateForm(): Boolean {
         return when {
             email.isBlank() -> {
-                error = "Email cannot be empty"
+                error = R.string.email_empty_error
                 false
             }
             !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                error = "Please enter a valid email"
+                error = R.string.invalid_email_error
                 false
             }
             password.isBlank() -> {
-                error = "Password cannot be empty"
+                error = R.string.password_empty_error
                 false
             }
             password.length < 6 -> {
-                error = "Password must be at least 6 characters"
+                error = R.string.password_length_error
                 false
             }
             else -> true
@@ -54,10 +55,10 @@ class LoginViewModel(
 
     fun login(
         onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        onError: (Int) -> Unit
     ) {
         if (!validateForm()) {
-            onError(error ?: "Invalid form")
+            onError(error ?: R.string.invalid_form_error)
             return
         }
 
@@ -70,7 +71,7 @@ class LoginViewModel(
                     onSuccess()
                 }
                 .onFailure { e ->
-                    error = e.message ?: "Login failed"
+                    error = R.string.login_failed_error
                     onError(error!!)
                 }
 

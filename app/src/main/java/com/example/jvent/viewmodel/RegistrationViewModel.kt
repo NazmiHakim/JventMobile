@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.jvent.R
 import com.example.jvent.repository.AuthRepository
 import kotlinx.coroutines.launch
 
@@ -21,7 +22,7 @@ class RegistrationViewModel(
         private set
     var isLoading by mutableStateOf(false)
         private set
-    var error by mutableStateOf<String?>(null)
+    var error by mutableStateOf<Int?>(null)
         private set
 
     fun updateUsername(newUsername: String) {
@@ -47,27 +48,27 @@ class RegistrationViewModel(
     private fun validateForm(): Boolean {
         return when {
             username.isBlank() -> {
-                error = "Username cannot be empty"
+                error = R.string.username_empty_error
                 false
             }
             email.isBlank() -> {
-                error = "Email cannot be empty"
+                error = R.string.email_empty_error
                 false
             }
             !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                error = "Please enter a valid email"
+                error = R.string.invalid_email_error
                 false
             }
             password.isBlank() -> {
-                error = "Password cannot be empty"
+                error = R.string.password_empty_error
                 false
             }
             password.length < 6 -> {
-                error = "Password must be at least 6 characters"
+                error = R.string.password_length_error
                 false
             }
             confirmPassword != password -> {
-                error = "Passwords do not match"
+                error = R.string.passwords_no_match_error
                 false
             }
             else -> true
@@ -76,10 +77,10 @@ class RegistrationViewModel(
 
     fun register(
         onSuccess: () -> Unit,
-        onError: (String) -> Unit
+        onError: (Int) -> Unit
     ) {
         if (!validateForm()) {
-            onError(error ?: "Invalid form")
+            onError(error ?: R.string.invalid_form_error)
             return
         }
 
@@ -91,8 +92,8 @@ class RegistrationViewModel(
                 .onSuccess {
                     onSuccess()
                 }
-                .onFailure { e ->
-                    error = e.message ?: "Registration failed"
+                .onFailure {
+                    error = R.string.registration_failed_error
                     onError(error!!)
                 }
 

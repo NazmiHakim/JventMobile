@@ -15,11 +15,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.jvent.JventApplication
+import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventCard
 import com.example.jvent.viewmodel.EventListViewModel
@@ -37,12 +39,12 @@ fun FavoritesScreen(
 
     Scaffold(
         topBar = {
-            DefaultTopBar(title = "Favorit")
+            DefaultTopBar(title = stringResource(id = R.string.favorite))
         }
     ) { innerPadding ->
         if (favoriteEvents.isEmpty()) {
             Text(
-                text = "Belum ada event favorit.",
+                text = stringResource(id = R.string.no_favorite_events),
                 modifier = Modifier.padding(innerPadding).padding(16.dp),
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,

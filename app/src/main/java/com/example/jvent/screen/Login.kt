@@ -49,8 +49,8 @@ fun LoginScreen(
 
     // Show error toast when error occurs
     LaunchedEffect(viewModel.error) {
-        viewModel.error?.let { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+        viewModel.error?.let { errorResId ->
+            Toast.makeText(context, context.getString(errorResId), Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -78,10 +78,10 @@ fun LoginScreen(
                 )
 
                 // Show error message if exists
-                viewModel.error?.let { error ->
+                viewModel.error?.let { errorResId ->
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = error,
+                        text = stringResource(id = errorResId),
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -124,8 +124,8 @@ fun LoginScreen(
                                     popUpTo("login") { inclusive = true }
                                 }
                             },
-                            onError = { error ->
-                                Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
+                            onError = { errorResId ->
+                                Toast.makeText(context, context.getString(errorResId), Toast.LENGTH_SHORT).show()
                             }
                         )
                     },

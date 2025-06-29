@@ -88,7 +88,7 @@ fun LandingPage(
                     }
                 )
                 NavigationDrawerItem(
-                    label = { Text("Favorit", color = MaterialTheme.colorScheme.onPrimary) },
+                    label = { Text(stringResource(R.string.favorite), color = MaterialTheme.colorScheme.onPrimary) },
                     icon = { Icon(Icons.Default.Favorite, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary) },
                     selected = false,
                     onClick = {
@@ -150,7 +150,7 @@ fun AppBarLanding(
                 value = searchQuery,
                 onValueChange = onSearchQueryChange,
                 leadingIcon = {
-                    Icon(Icons.Default.Search, contentDescription = "Search")
+                    Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_label))
                 },
                 placeholder = { Text(stringResource(R.string.search_event)) },
                 modifier = Modifier
@@ -162,7 +162,7 @@ fun AppBarLanding(
         },
         navigationIcon = {
             IconButton(onClick = onMenuClick) {
-                Icon(Icons.Filled.Menu, contentDescription = "Menu")
+                Icon(Icons.Filled.Menu, contentDescription = stringResource(id = R.string.menu_label))
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
@@ -178,7 +178,7 @@ fun HeroSection(navigateToExploreEvent: () -> Unit) {
     ) {
         Image(
             painter = rememberAsyncImagePainter("https://cdn.trii.global/Banner/NewsArticle/mobile/-1248124158.jpg"),
-            contentDescription = "Hero Image",
+            contentDescription = stringResource(id = R.string.hero_image_desc),
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize()
         )
@@ -242,7 +242,7 @@ fun PopularEventSection(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (events.isEmpty()) {
-            Text("No events available", modifier = Modifier.padding(16.dp))
+            Text(stringResource(id = R.string.no_events_available), modifier = Modifier.padding(16.dp))
         } else {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),

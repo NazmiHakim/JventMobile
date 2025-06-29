@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.ImageLoader
@@ -50,7 +51,7 @@ fun NavigateWithLoading(isLoading: Boolean) {
                     .data(R.drawable.loading)
                     .build(),
                 imageLoader = imageLoader,
-                contentDescription = "Loading GIF",
+                contentDescription = stringResource(id = R.string.loading_gif_desc),
                 modifier = Modifier.size(80.dp)
             )
         }

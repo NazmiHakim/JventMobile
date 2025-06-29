@@ -38,7 +38,7 @@ fun EditEvent(
 
     // Load the event data when the screen is first composed
     LaunchedEffect(Unit) {
-        viewModel.loadEvent(eventId)
+        viewModel.loadEvent(eventId, context)
     }
 
     val imagePicker = rememberLauncherForActivityResult(
@@ -56,9 +56,11 @@ fun EditEvent(
         }
     }
 
+    val paidEventString = stringResource(id = R.string.paid_event)
+
     Scaffold(
         topBar = {
-            DefaultTopBar(title = "Edit Event") // Changed title
+            DefaultTopBar(title = stringResource(id = R.string.edit_event)) // Changed title
         }
     ) { innerPadding ->
         LazyColumn(
@@ -85,7 +87,7 @@ fun EditEvent(
                     if (imageModel != null) {
                         AsyncImage(
                             model = imageModel,
-                            contentDescription = "Selected image",
+                            contentDescription = stringResource(id = R.string.selected_image_desc),
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()
                         )
@@ -111,7 +113,7 @@ fun EditEvent(
             }
             item {
                 EventTextField(
-                    label = "Penyelenggara Event",
+                    label = stringResource(id = R.string.event_organizer_label),
                     value = viewModel.organizer,
                     onValueChange = { viewModel.organizer = it }
                 )
@@ -132,7 +134,7 @@ fun EditEvent(
             }
 
             item {
-                val eventTypes = listOf("Gratis", "Berbayar")
+                val eventTypes = listOf(stringResource(id = R.string.free_event), paidEventString)
                 var expanded by remember { mutableStateOf(false) }
 
                 ExposedDropdownMenuBox(
@@ -143,9 +145,11 @@ fun EditEvent(
                         value = viewModel.eventType,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Tipe Event") },
+                        label = { Text(stringResource(id = R.string.event_type_label)) },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor().fillMaxWidth()
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth()
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -164,10 +168,10 @@ fun EditEvent(
                 }
             }
 
-            if (viewModel.eventType == "Berbayar") {
+            if (viewModel.eventType == paidEventString) {
                 item {
                     EventTextField(
-                        label = "Harga Event (Contoh: Rp 25.000)",
+                        label = stringResource(id = R.string.event_price_label),
                         value = viewModel.price,
                         onValueChange = { viewModel.price = it },
                     )
@@ -186,7 +190,9 @@ fun EditEvent(
                     value = viewModel.description,
                     onValueChange = { viewModel.description = it },
                     label = { Text(stringResource(id = R.string.description)) },
-                    modifier = Modifier.fillMaxWidth().height(120.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(120.dp),
                 )
             }
 
@@ -198,9 +204,9 @@ fun EditEvent(
                             context = context,
                             eventId = eventId,
                             onSuccess = {
-                                Toast.makeText(context, "Event berhasil diperbarui!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, R.string.event_updated_success, Toast.LENGTH_SHORT).show()
                                 navigateToDashboard()
-                                viewModel.resetForm()
+                                viewModel.resetForm(context)
                             },
                             onError = { errorMsg ->
                                 Toast.makeText(context, errorMsg, Toast.LENGTH_LONG).show()
@@ -218,7 +224,7 @@ fun EditEvent(
                             modifier = Modifier.size(20.dp)
                         )
                     } else {
-                        Text("Update Event")
+                        Text(stringResource(id = R.string.update_event_button))
                     }
                 }
             }
