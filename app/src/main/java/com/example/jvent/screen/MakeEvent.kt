@@ -16,6 +16,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,7 @@ fun MakeEvent(
     val viewModel: EventViewModel = viewModel()
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -65,16 +67,23 @@ fun MakeEvent(
         true
     )
 
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _, year, month, dayOfMonth ->
-            viewModel.dateTime = "$dayOfMonth/${month + 1}/$year"
-            timePickerDialog.show()
-        },
-        calendar.get(Calendar.YEAR),
-        calendar.get(Calendar.MONTH),
-        calendar.get(Calendar.DAY_OF_MONTH)
-    )
+    if (showDatePicker) {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                viewModel.dateTime = "$dayOfMonth/${month + 1}/$year"
+                timePickerDialog.show()
+                showDatePicker = false
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setOnDismissListener { showDatePicker = false }
+            show()
+        }
+    }
+
 
     val paidEventString = stringResource(id = R.string.paid_event)
 
@@ -152,7 +161,7 @@ fun MakeEvent(
                     label = { Text(stringResource(id = R.string.date_time)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { datePickerDialog.show() },
+                        .clickable { showDatePicker = true },
                     enabled = false,
                     trailingIcon = {
                         Icon(
@@ -180,7 +189,7 @@ fun MakeEvent(
 
             item {
                 val eventTypes = listOf(stringResource(id = R.string.free_event), paidEventString)
-                var expanded by remember { mutableStateOf(false) }
+                var expanded by rememberSaveable { mutableStateOf(false) }
 
                 ExposedDropdownMenuBox(
                     expanded = expanded,

@@ -50,6 +50,8 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     private var eventUserId: String? = null
     var showDeleteDialog by mutableStateOf(false)
 
+    private var loadedEventId: String? = null
+
     fun getEventById(eventId: String): Flow<Event?> {
         return repository!!.getEventById(eventId)
     }
@@ -77,6 +79,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
         eventUserId = null
         eventType = context.getString(R.string.free_event)
         price = ""
+        loadedEventId = null
     }
 
     private fun validateForm(isUpdate: Boolean = false, context: Context): Boolean {
@@ -115,6 +118,10 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
     }
 
     fun loadEvent(eventId: String, context: Context) {
+        if (loadedEventId == eventId) {
+            return
+        }
+
         viewModelScope.launch {
             isLoading = true
             error = null
@@ -131,6 +138,8 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
                     eventType = event.eventType
                     price = event.price
                     eventUserId = event.userId
+
+                    loadedEventId = eventId
                 } ?: run {
                     error = context.getString(R.string.event_not_found_error)
                 }

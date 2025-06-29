@@ -1,5 +1,8 @@
 package com.example.jvent.screen
 
+import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -11,8 +14,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,7 +31,9 @@ import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventTextField
 import com.example.jvent.viewmodel.EventViewModel
+import java.util.Calendar
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditEvent(
@@ -35,9 +42,10 @@ fun EditEvent(
     viewModel: EventViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
-    // Load the event data when the screen is first composed
-    LaunchedEffect(Unit) {
+    LaunchedEffect(eventId) {
         viewModel.loadEvent(eventId, context)
     }
 
@@ -45,7 +53,7 @@ fun EditEvent(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             uri?.let {
-                viewModel.imageUri = it // Set the new local URI
+                viewModel.imageUri = it
             }
         }
     )
@@ -56,11 +64,38 @@ fun EditEvent(
         }
     }
 
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            viewModel.dateTime += " ${String.format("%02d:%02d", hourOfDay, minute)}"
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true
+    )
+
+    if (showDatePicker) {
+        DatePickerDialog(
+            context,
+            { _, year, month, dayOfMonth ->
+                viewModel.dateTime = "$dayOfMonth/${month + 1}/$year"
+                timePickerDialog.show()
+                showDatePicker = false
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).apply {
+            setOnDismissListener { showDatePicker = false }
+            show()
+        }
+    }
+
     val paidEventString = stringResource(id = R.string.paid_event)
 
     Scaffold(
         topBar = {
-            DefaultTopBar(title = stringResource(id = R.string.edit_event)) // Changed title
+            DefaultTopBar(title = stringResource(id = R.string.edit_event))
         }
     ) { innerPadding ->
         LazyColumn(
@@ -82,7 +117,6 @@ fun EditEvent(
                         .clickable { imagePicker.launch("image/*") },
                     contentAlignment = Alignment.Center
                 ) {
-                    // Display new image if selected, otherwise display the old one
                     val imageModel = viewModel.imageUri ?: viewModel.imageUrl
                     if (imageModel != null) {
                         AsyncImage(
@@ -103,7 +137,6 @@ fun EditEvent(
                 }
             }
 
-            // --- Form Fields ---
             item {
                 EventTextField(
                     label = stringResource(id = R.string.event_name),
@@ -118,11 +151,30 @@ fun EditEvent(
                     onValueChange = { viewModel.organizer = it }
                 )
             }
+
             item {
-                EventTextField(
-                    label = stringResource(id = R.string.date_time),
+                OutlinedTextField(
                     value = viewModel.dateTime,
-                    onValueChange = { viewModel.dateTime = it }
+                    onValueChange = { viewModel.dateTime = it },
+                    label = { Text(stringResource(id = R.string.date_time)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true },
+                    enabled = false,
+                    trailingIcon = {
+                        Icon(
+                            Icons.Default.DateRange,
+                            contentDescription = stringResource(id = R.string.select_date_desc)
+                        )
+                    },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                        disabledBorderColor = MaterialTheme.colorScheme.outline,
+                        disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 )
             }
             item {
@@ -135,7 +187,7 @@ fun EditEvent(
 
             item {
                 val eventTypes = listOf(stringResource(id = R.string.free_event), paidEventString)
-                var expanded by remember { mutableStateOf(false) }
+                var expanded by rememberSaveable { mutableStateOf(false) }
 
                 ExposedDropdownMenuBox(
                     expanded = expanded,
@@ -196,7 +248,6 @@ fun EditEvent(
                 )
             }
 
-            // --- Update Button ---
             item {
                 Button(
                     onClick = {
