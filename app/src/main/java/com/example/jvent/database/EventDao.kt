@@ -8,35 +8,40 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.example.jvent.model.Event
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 @Dao
 interface EventDao {
-    // Returns a Flow, so the UI is automatically updated on data changes
+
     @Query("SELECT * FROM events ORDER BY createdAt DESC")
     fun getAllEvents(): Flow<List<Event>>
 
     @Query("SELECT * FROM events WHERE isFavorite = 1 ORDER BY createdAt DESC")
     fun getFavoriteEvents(): Flow<List<Event>>
 
-    // --- TAMBAHKAN FUNGSI INI ---
     @Query("SELECT * FROM events WHERE id = :id")
     fun getEventById(id: String): Flow<Event?>
-    // -------------------------
 
-    // Inserts a list of events. Replaces on conflict.
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(events: List<Event>)
 
     @Update
     suspend fun updateEvent(event: Event)
 
-    // Deletes all events from the table
     @Query("DELETE FROM events")
     suspend fun deleteAll()
 
     @Transaction
     suspend fun refreshEvents(events: List<Event>) {
+        val favoriteIds = getFavoriteEvents().first().map { it.id }
         deleteAll()
-        insertAll(events)
+        val newEvents = events.map { event ->
+            if (favoriteIds.contains(event.id)) {
+                event.copy(isFavorite = true)
+            } else {
+                event
+            }
+        }
+        insertAll(newEvents)
     }
 }

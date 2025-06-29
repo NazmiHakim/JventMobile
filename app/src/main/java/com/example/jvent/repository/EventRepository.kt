@@ -7,6 +7,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class EventRepository(private val eventDao: EventDao) {
@@ -42,6 +43,13 @@ class EventRepository(private val eventDao: EventDao) {
                     Log.d("EventRepository", "Events refreshed from Firestore and cached in Room.")
                 }
             }
+        }
+    }
+
+    suspend fun updateFavoriteStatus(eventId: String, isFavorite: Boolean) {
+        val event = eventDao.getEventById(eventId).first()
+        if (event != null) {
+            eventDao.updateEvent(event.copy(isFavorite = isFavorite))
         }
     }
 }

@@ -55,7 +55,7 @@ class EventViewModel(private val repository: EventRepository? = null) : ViewMode
 
     fun updateFavoriteStatus(event: Event, isFavorite: Boolean, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository?.updateEvent(event.copy(isFavorite = isFavorite))
+            repository?.updateFavoriteStatus(event.id, isFavorite)
 
             withContext(Dispatchers.Main) {
                 val message = if (isFavorite) context.getString(R.string.added_to_favorites) else context.getString(R.string.removed_from_favorites)
