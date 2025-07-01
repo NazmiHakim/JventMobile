@@ -1,7 +1,9 @@
 package com.example.jvent.screen
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -30,6 +32,8 @@ import com.example.jvent.R
 import com.example.jvent.components.DefaultTopBar
 import com.example.jvent.components.EventTextField
 import com.example.jvent.viewmodel.EventViewModel
+import com.yalantis.ucrop.UCrop
+import java.io.File
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,14 +46,43 @@ fun MakeEvent(
     val calendar = Calendar.getInstance()
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
-    val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            uri?.let {
+    // Launcher untuk hasil dari UCrop
+    val uCropLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val resultUri = UCrop.getOutput(result.data!!)
+            resultUri?.let {
                 viewModel.imageUri = it
             }
+        } else if (result.resultCode == UCrop.RESULT_ERROR) {
+            val cropError = UCrop.getError(result.data!!)
+            Toast.makeText(context, "Crop error: ${cropError?.message}", Toast.LENGTH_SHORT).show()
         }
-    )
+    }
+
+    // Launcher untuk memilih gambar dari galeri
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { sourceUri ->
+        sourceUri?.let {
+            val destinationFileName = "cropped_image_${System.currentTimeMillis()}.jpg"
+            val destinationUri = Uri.fromFile(File(context.cacheDir, destinationFileName))
+
+            val options = UCrop.Options().apply {
+                setCompressionQuality(90)
+                setFreeStyleCropEnabled(true)
+            }
+
+            val uCrop = UCrop.of(it, destinationUri)
+                .withAspectRatio(16F, 9F)
+                .withMaxResultSize(1080, 720)
+                .withOptions(options)
+
+            val intent = uCrop.getIntent(context)
+            uCropLauncher.launch(intent)
+        }
+    }
 
     LaunchedEffect(viewModel.error) {
         viewModel.error?.let { error ->

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.jvent"
-    compileSdk = 35
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.example.jvent"
@@ -136,6 +136,8 @@ dependencies {
     // Notification
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.compose.runtime:runtime-livedata:1.6.7")
+
+    implementation("com.github.yalantis:ucrop:2.2.8")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
